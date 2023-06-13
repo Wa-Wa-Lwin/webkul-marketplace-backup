@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--/**
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+ -->
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Magento/Widget/etc/widget.xsd">
+  <widget id="wk_SlideShowSeller" class="Webkul\Marketplace\Block\Widget\Featuredsellers">
+      <label translate="true">Vendor Featured</label>
+      <description translate="true">Widget for Vendor Featured</description>
+      <parameters>
+      		<parameter name="transitionTime" xsi:type="text" required="true" visible="true" sort_order="1" >
+      			<label translate="true">Transition Time</label>
+            <description translate="true">e.g 3000 put the Transition Time</description>
+      		</parameter>
+    			<parameter name="sellerids" xsi:type="text" required="true" visible="true" sort_order="7" >
+    				<label translate="true">Seller Ids</label>
+    				<description translate="true">Add values with comma separation e.g 16,17,25</description>
+    			</parameter>
+          <parameter name="sliderwidth" xsi:type="text" required="true" visible="true" sort_order="6" >
+      	    <label translate="true">Width</label>
+      		</parameter>
+          <parameter name="ratio" xsi:type="select" required="true" source_model="Webkul\Marketplace\Model\Config\Source\Ratio" visible="true" sort_order="6" >
+    				<label translate="true">Ratio of Height:Width</label>
+            <description translate="true">e.g 1:2 , if you provide invalid ratio then it will set the seller logo ratio 1:2 by default</description>
+    			</parameter>
+      </parameters>
+  </widget>
+</widgets>

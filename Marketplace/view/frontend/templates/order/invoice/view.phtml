@@ -1,0 +1,209 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+$helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+$pickupStoreHelper = $this->helper('Order\Tracking\Helper\PickupStoreAddressHelper');
+
+$isPartner = $helper->isSeller();
+if ($isPartner == 1) {
+    $orderId = $this->getRequest()->getParam('order_id');
+    $invoiceId = $this->getRequest()->getParam('invoice_id');
+    $order = $block->getOrder();
+    $invoice = $block->getInvoice();
+    $invoiceStatus = '';
+    if ($invoice->getState()==1) {
+        $invoiceStatus = __('Pending');
+    } elseif ($invoice->getState()==2) {
+        $invoiceStatus = __('Paid');
+    } elseif ($invoice->getState()==3) {
+        $invoiceStatus = __('Canceled');
+    }
+    $paymentMethod = '';
+    if ($order->getPayment()) {
+        $paymentMethod = $order->getPayment()->getMethodInstance()->getTitle();
+    }
+
+    $marketplaceOrders = $block->getSellerOrderInfo($orderId);
+    if (count($marketplaceOrders)) {    ?>
+        <div class="wk-mp-design">
+            <div class="fieldset wk-mp-fieldset">
+                <div class="page-title-wrapper">
+                    <h1 class="page-title">
+                        <span data-ui-id="page-title-wrapper" class="base">
+                            <?= /* @noEscape */ __('Invoice #%1', $invoice->getIncrementId()) ?>
+                        </span>
+                    </h1>
+                    <span class="order-status"><?= $escaper->escapeHtml($invoiceStatus)?></span>
+                    <div class="order-date">
+                        <?= /* @noEscape */ __('<span class="label">Order Date:</span> %1', '<date>' . $block->formatDate($invoice->getCreatedAt(), \IntlDateFormatter::MEDIUM, true, $block->getTimezoneForStore($order->getStore())) . '</date>') ?>
+                    </div>
+                    <div class="actions-toolbar order-actions-toolbar">
+                        <div class="actions">
+                            <a href="<?= $escaper->escapeUrl($block->getUrl('marketplace/order_invoice/email', ['order_id'=>$orderId,'invoice_id'=>$invoiceId, '_secure' => $this->getRequest()->isSecure()]))?>" onclick="return confirm('<?= /* @noEscape */ __("Are you sure you want to send invoice email to customer?") ?>')" class="action">
+                                <button class="button wk-mp-btn" title="<?= /* @noEscape */ __('Send Email To Customer') ?>" type="button">
+                                    <span><span><?= /* @noEscape */ __('Send Email') ?></span></span>
+                                </button>
+                            </a>
+                            <a href="<?= $escaper->escapeUrl($block->getUrl('marketplace/order_invoice/printpdf', ['order_id'=>$orderId,'invoice_id'=>$invoiceId, '_secure' => $this->getRequest()->isSecure()]));?>" class="action">
+                                <button class="button wk-mp-btn" title="<?= /* @noEscape */ __('Invoice Slip') ?>">
+                                    <span><span><?= /* @noEscape */ __('Print Invoice') ?></span></span>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="block block-order-details-view">
+                    <div class="block-title">
+                        <strong><?= /* @noEscape */ __('Order Information') ?></strong>
+                    </div>
+                    <div class="block-content">
+                        <div class="box-content">
+                            <div class="box wk-box">
+                                <strong class="box-title wk-order-info-title">
+                                    <a href="<?= $escaper->escapeUrl($block->getUrl('marketplace/order/view', ['id'=>$orderId, '_secure' => $this->getRequest()->isSecure()]));?>">
+                                        <?= /* @noEscape */ __('Order # %1', $order->getIncrementId()) ?>
+                                    </a>
+                                </strong>
+                                <div class="box-content">
+                                    <div class="wk-row">
+                                        <span class="label"><?= /* @noEscape */ __('Order Status')?> : </span>
+                                        <span class="value"><?= $escaper->escapeHtml(ucfirst($order->getStatus())); ?></span>
+                                    </div>
+                                    <div class="wk-row">
+                                        <span class="label"><?= /* @noEscape */ __('Order Date')?> : </span>
+                                        <span class="value"><?= /* @noEscape */ $block->formatDate($order->getCreatedAt(), \IntlDateFormatter::MEDIUM, true, $block->getTimezoneForStore($order->getStore())); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php if ($helper->getSellerProfileDisplayFlag()) { ?>
+                                <div class="box wk-box">
+                                    <strong class="box-title"><span><?= /* @noEscape */ __('Buyer Information') ?></span></strong>
+                                    <div class="box-content">
+                                        <div class="box wk-box">
+                                            <div class="wk-row">
+                                                <span class="label"><?= /* @noEscape */ __('Customer Name')?> : </span>
+                                                <span class="value"><?= $escaper->escapeHtml($order->getCustomerName()); ?></span>
+                                            </div>
+                                            <div class="wk-row">
+                                                <span class="label"><?= /* @noEscape */ __('Email')?> : </span>
+                                                <span class="value"><?= $escaper->escapeHtml($order->getCustomerEmail()); ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+                <?php if ($helper->getSellerProfileDisplayFlag()) { ?>
+                    <div class="block block-order-details-view">
+                        <div class="block-title">
+                            <strong><?= /* @noEscape */ __('Address Information') ?></strong>
+                        </div>
+                        <div class="block-content">
+                            <div class="box-content">
+                                <div class="box box-order-billing-address wk-box">
+                                    <strong class="box-title">
+                                        <span><?= /* @noEscape */ __('Billing Address') ?></span>
+                                    </strong>
+                                    <div class="box-content">
+                                        <address><?= /* @noEscape */ $block->getFormattedAddress($order->getBillingAddress()); ?></address>
+                                    </div>
+                                </div>
+                                <?php 
+                                if (!$order->getIsVirtual()):
+                                // if ($block->isOrderCanShip($order)): 
+                                ?>
+                                    <div class="box box-order-shipping-address wk-box">
+                                        <strong class="box-title"><span><?= /* @noEscape */ __('Shipping Address') ?></span></strong>
+                                        <div class="box-content">
+                                            <address><?= /* @noEscape */ $block->getFormattedAddress($order->getShippingAddress()); ?></address>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php } ?>
+                <div class="block block-order-details-view">
+                    <div class="block-title">
+                        <strong><?= /* @noEscape */ __('Payment & Shipping Method') ?></strong>
+                    </div>
+                    <div class="block-content">
+                        <div class="box box-order-billing-method wk-box">
+                            <strong class="box-title">
+                                <span><?= /* @noEscape */ __('Payment Information') ?></span>
+                            </strong>
+                            <div class="box-content">
+                                <?= $escaper->escapeHtml($paymentMethod); ?>
+                            </div>
+                        </div>
+                        <?php 
+                        //if ($block->isOrderCanShip($order)): 
+                        if (!$order->getIsVirtual()):
+                        ?>
+                            <div class="box box-order-shipping-method wk-box">
+                                <strong class="box-title">
+                                    <span><?= /* @noEscape */ __('Shipping and Tracking Information') ?></span>
+                                </strong>
+                                <div class="box-content">
+                                    <?php if ($order->getShippingDescription()): ?>
+                                        <?= $escaper->escapeHtml($order->getShippingDescription()) ?>
+                                        <?php if ($order->getPayAtStoreId() && $order->getShippingMethod() == 'payatstore_payatstore') : ?>
+                                            <address class="admin__page-section-item-content"><?= /* @noEscape */ $pickupStoreHelper->generateAddress($order->getPayAtStoreId()) ?></address>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <?= /* @noEscape */ __('No shipping information available'); ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div class="block block-order-details-view wk-order-title-block">
+                    <div class="block-title">
+                        <strong><?= /* @noEscape */ __('Items Invoiced') ?></strong>
+                    </div>
+                </div>
+                <div class="order-details-items ordered">
+                    <div class="order-title">
+                        <strong><?= /* @noEscape */ __('Items Invoiced') ?></strong>
+                    </div>
+                    <?= $block->getChildHtml('marketplace_order_invoice_items') ?>
+                </div>
+            </div>
+        </div>
+        <div class="buttons-set">
+            <p class="back-link">
+                <a href="<?= $escaper->escapeUrl($block->getUrl('marketplace/order/history', ['_secure' => $this->getRequest()->isSecure()]));?>" class="left">&laquo; <?= /* @noEscape */ __('Back To My Orders') ?></a>
+            </p>
+        </div>
+        <script>
+            require([
+                "jquery",
+                "mage/mage"
+            ], function($) {
+                var dataForm = $('#marketplace-shipping-form');
+                dataForm.mage('validation', {});
+
+                $('#mp-create-shipment-btn').click(function() {
+                    dataForm.submit();
+                });
+            });
+        </script>
+        <?php
+    }
+} else { ?>
+    <h2 class="wk-mp-error_msg">
+        <?= /* @noEscape */ __("To Become Seller Please Contact to Admin."); ?>
+    </h2>
+    <?php
+} ?>

@@ -1,0 +1,32 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<ol class="items">
+    <?php foreach ($filterItems as $filterItem): ?>
+        <li class="item">
+            <?php if ($filterItem->getCount() > 0): ?>
+                <a href="<?= $escaper->escapeUrl($filterItem->getUrl()) ?>">
+                    <?= /* @noEscape */ $filterItem->getLabel() ?>
+                    <?php if ($this->helper(\Magento\Catalog\Helper\Data::class)->shouldDisplayProductCountOnLayer()): ?>
+                        <span class="count"><?= /* @noEscape */ $filterItem->getCount() ?><span class="filter-count-label">
+                            <?php if ($filterItem->getCount() == 1):?> <?= /* @escapeNotVerified */ $escaper->escapeHtml(__('item')) ?><?php else:?> <?= /* @escapeNotVerified */ $escaper->escapeHtml(__('items')) ?><?php endif;?></span></span>
+                    <?php endif; ?>
+                </a>
+            <?php else:?>
+                <?= /* @noEscape */ $filterItem->getLabel() ?>
+                <?php if ($this->helper(\Magento\Catalog\Helper\Data::class)->shouldDisplayProductCountOnLayer()): ?>
+                    <span class="count"><?= /* @noEscape */ $filterItem->getCount() ?><span class="filter-count-label">
+                        <?php if ($filterItem->getCount() == 1):?><?= /* @noEscape */ __('item') ?><?php else:?><?= /* @noEscape */ __('items') ?><?php endif;?></span></span>
+                <?php endif; ?>
+            <?php endif; ?>
+        </li>
+    <?php endforeach ?>
+</ol>

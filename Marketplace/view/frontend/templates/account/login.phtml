@@ -1,0 +1,73 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+$helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+$registrationBlockStatus = $helper->getConfigValue(
+    'landingpage_settings',
+    'allow_seller_registration_block'
+);
+$pageLayoutValue = $helper->getConfigValue(
+    'landingpage_settings',
+    'pageLayout'
+);
+if ($pageLayoutValue != 1 && $registrationBlockStatus == 0) {
+    $accountCreateUrl = $block->getUrl(
+        'marketplace/index/index',
+        ["_secure" => $this->getRequest()->isSecure()]
+    );
+} else {
+    $accountCreateUrl = $helper->getSellerRegistrationUrl();
+}
+?>
+<form class="form form-login"
+    action="<?= $escaper->escapeUrl($block->getPostActionUrl()) ?>"
+    method="post"
+    id="login-form"
+    data-mage-init='{"validation":{}}'>
+    <?= $block->getBlockHtml('formkey') ?>
+    <fieldset class="fieldset login" data-hasrequired="<?= $escaper->escapeHtml(__('* Required Fields')) ?>">
+        <div class="field note"><?= $escaper->escapeHtml(__('If you have an account, sign in with your email address.')) ?></div>
+
+        <div class="field email required">
+            <label class="label" for="email"><span><?= $escaper->escapeHtml(__('Email or Phone Number')) ?></span></label>
+            <div class="control">
+                <input name="login[username]" value="<?= $escaper->escapeHtml($block->getUsername()) ?>" <?php if ($block->isAutocompleteDisabled()): ?> autocomplete="off"<?php endif; ?> id="email" type="text" class="input-text" title="<?= $escaper->escapeHtml(__('Email')) ?>" data-validate="{required:true, 'validate-phone-number-custom':true}">
+            </div>
+        </div>
+        
+        <div class="field password required">
+            <label for="pass" class="label"><span><?= $escaper->escapeHtml(__('Password')) ?></span></label>
+            <div class="control">
+                <input name="login[password]" type="password" <?php if ($block->isAutocompleteDisabled()): ?> autocomplete="off"<?php endif; ?> class="input-text" id="pass" title="<?= $escaper->escapeHtml(__('Password')) ?>" data-validate="{required:true}">
+            </div>
+        </div>
+
+        <?= $block->getChildHtml('form_additional_info') ?>
+        <div class="form-actions">
+            <div class="actions">
+                <button type="submit" class="action-login action-primary">
+                    <span><?= /* @escapeNotVerified */$escaper->escapeHtml(__('Sign in')) ?></span>
+                </button>
+                <?= $block->getChildHtml('form.additional.buttons') ?>
+            </div>
+            <div class="secondary">
+                <a class="action remind" href="<?= $escaper->escapeUrl($block->getForgotPasswordUrl()) ?>">
+                    <span><?= $escaper->escapeHtml(__('Forgot Your Password?')) ?></span>
+                </a>
+            </div>
+            <div class="secondary">
+                <a class="action remind" href="<?= $escaper->escapeUrl($accountCreateUrl) ?>" target="_blank">
+                    <span><?= $escaper->escapeHtml(__("Don't have account? Click here to register")) ?></span>
+                </a>
+            </div>
+        </div>
+    </fieldset>
+    <input type="hidden" name="vendor_login" value="1"/>
+</form>

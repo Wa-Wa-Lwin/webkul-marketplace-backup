@@ -1,0 +1,279 @@
+Legend
+
++ Features
+- Bugs
+
+-------------------------------- Version 5.0.3 --------------------------------------
+    + Shipping amount with multiseller order issue is fixed.
+    + Image proportions issue has been fixed on vendor product edit page.
+    + Wrong order total issue has been fixed on order history page.
+    + Category issue has been fixed for the top selling category on vendor dashboard.
+    + Wrong commission issue has been fixed for the associated products.
+
+-------------------------------- Version 5.0.2-p1 --------------------------------------
+    + Compatibility issue fixed with Magento 2.4.2.
+    + Currency issue fixed on the transaction page.
+    + Notification issue on admin end is fixed.
+    + Admin can change the seller profile banner's default image from their end.
+    + Product flag issue is resolved with the custom role resources.
+
+-------------------------------- Version 5.0.2 --------------------------------------
+    + Seller can add google anyalytic id from their panel.
+    + Admin can enable/disable the google analytic functionality.
+
+-------------------------------- Version 5.0.1 --------------------------------------
+    + Fixed Pdf print issue from Seller end.
+    + Compatible with Magento 2.4.1.
+
+-------------------------------- Version 5.0.0 --------------------------------------
+    + Compatible with Magento 2.4.x.
+
+-------------------------------- Version 3.0.8 --------------------------------------
+    + Seller creation from admin end issue is fixed.
+    - Wysiwyg image upload issue resolved.
+
+-------------------------------- Version 3.0.7 --------------------------------------
+    - Fixed some minor bugs from seller end.
+
+-------------------------------- Version 3.0.6 --------------------------------------
+    + Admin can enable/disable minimum order functionality.
+    + Admin & seller can set minimum order amount.
+    + Seller profile link for each item on customer order view page.
+    + Seller can add image from Wysiwyg editor.
+    - Fixed Multi-website issue on product create and update from seller end.
+
+-------------------------------- Version 3.0.5 --------------------------------------
+    + Seller can check their earnings from Navigation.
+    + Earnings will show in chart & grid view.
+    
+-------------------------------- Version 3.0.4 --------------------------------------
+    + Compatible with Magento 2.3.4.
+
+-------------------------------- Version 3.0.3 --------------------------------------
+    + Seller & admin can filter denied, approved and pending products.
+    + Admin can assign products to seller from the product edit page.
+    - Fixed Few more bugs.
+
+-------------------------------- Version 3.0.2 --------------------------------------
+    + Customer can report flag against seller's products.
+    + Customer can report flag against seller.
+    + Admin can enable/disable the report flag functionality.
+    + Admin can add the flag reasons.
+    + Admin can deny/suspend selller & product based on the reported flags.
+    - Fixed Few more bugs.
+
+-------------------------------- Version 3.0.1 --------------------------------------
+    - Removed unnecessary use of object manager.
+    - Removed cyclomatic complexity.
+    - Fixed layout issues and removed redundancy from layout.
+    + Added marketplace logger file to log the data.
+    + Use the specified function to generate XSS-safe output.
+
+-------------------------------- Version 3.0.0 --------------------------------------
+    + Compatible with Magento 2.3.x.
+    - Seller collection page issue resolved which is coming on 2.3.2.
+    - Seller status change email's link redirect issue resolved.
+    - Fixed Few more bugs.
+
+-------------------------------- Version 2.3.0 --------------------------------------
+    + Compatible with Magento 2.2.x.
+    - Google Recaptcha issue resolved on Vendor login and Regsitration page.
+    - Seller Product Search issue resolved if flat catalog and category is enabled.
+    - Fixed Few more bugs.
+
+-------------------------------- Version 2.2.5 --------------------------------------
+    + Admin can add featured seller slider.
+    - fixed few bugs.
+
+-------------------------------- Version 2.2.4 --------------------------------------
+    + Admin can set multiple seller approval status.
+    - fixed few bugs.
+
+-------------------------------- Version 2.2.3 --------------------------------------
+    + Declarative Schema added.
+    - Fixed few bugs.
+
+-------------------------------- Version 2.2.2 --------------------------------------
+    + Sitemap feature added for seller's profile and collection pages.
+    - Fixed few bugs.
+
+-------------------------------- Version 2.2.1 --------------------------------------
+    + Compatible with Magento 2.3.x and PHP 7.2.
+
+-------------------------------- Version 2.2.0 --------------------------------------
+    + Compatible with Magento 2.3.x.
+
+-------------------------------- Version 2.1.10 --------------------------------------
+    - Fixed Few bugs.
+    + Seller filter feature added in layered navigation
+    + Added feature to select different type of seller information display on product page.
+
+-------------------------------- Version 2.1.9 --------------------------------------
+    - Fixed Seller Order Status issue in seller order grid for separated dashboard layout.
+    - Fixed Few bugs.
+    + Added a new field to seller's profile page to add their privacy policy.
+    + Added items and total child block in order view page.
+
+-------------------------------- Version 2.1.8 --------------------------------------
+    + Added customer, review list page for default seller layout
+    + Add transaction withdrawal request block in transaction page for default seller page layout.
+
+-------------------------------- Version 2.1.7 --------------------------------------
+    - Fixed product image upload console error issue at seller dashboard.
+    + Added Duplicate Product Create Feature at seller dashboard.
+
+-------------------------------- Version 2.1.6 --------------------------------------
+    + Added Layered Navigation in seller collection page.
+
+-------------------------------- Version 2.1.5 --------------------------------------
+    - Fixed Cross site request forgery(CSRF) vulnerability issue with seller individual product delete.
+    - Fixed color picker selection issue with mobile view.
+    - Fixed order grid view load issue with marketplace shipping addons after generating shipping label.
+    - Fixed varnish cache issue with product view page.
+    - Fixed product limit notification issue with non seller products.
+    - Fixed issue with Add New Product page when after saving product results an error the it's wiping out all data from Add New Product page.
+    - Fixed category unassign issue when saving product with magento 2.2.x.
+    - Fixed seller's product order shipping issue with multiple currency.
+    - Fixed issue with update seller profile page when after saving profile information results an error the it's wiping out all data from seller profile page.
+    - Fixed issue with product status update with "Product Update Approval Required" setting as "No" at vendor dashboard.
+    - Fixed issue with configurable product qty on order history page when separate vendor dashboard set as "No".
+    - Fixed currency ralated order total issue.
+
+-------------------------------- Version 2.1.4 --------------------------------------
+    - Fixed Cross-site scripting (XSS - stored) vulnerability issue.
+    - Fixed separate seller dashboard left menu header logo issue.
+    - Fixed seller product reindexing issue after approving by admin.
+    - Fixed seller collection page sorting issue by name and position with magento version 2.2.2.
+    + Showing marketplace header links "Sell", "Vendor Dashboard".
+    + Added configuration setting for uploading logo for separate seller dashboard left menu header.
+
+-------------------------------- Version 2.1.3 --------------------------------------
+    + Change seller public url's design.
+    - Fixed issue with custom options save with magento2.2.
+    - Fixed some issues.
+
+-------------------------------- Version 2.1.2 --------------------------------------
+    + Allowed vendors to add their information store wise.
+
+-------------------------------- Version 2.1.1 --------------------------------------
+    + Allowed vendors to have their separate vendor dashboard from their customer dashboard.
+    + Allowed vendors to switch to their buyer dashboard from vendor dashboard and vice versa.
+    + Allowed admin to configure vendor product add/edit page category tree view page like admin panel.
+    + Added vendor login link.
+    + Allowed vendors to see their customers grid if separate vendor panel enabled.
+    + Allowed vendors to see their review grid if separate vendor panel enabled.
+    + Allowed vendors to see their all activities grid if separate vendor panel enabled.
+    + Allowed vendors to make withdrawal request for their remaining amount if separate vendor panel enabled.
+
+-------------------------------- Version 2.1.0 --------------------------------------
+    - Removed unserialize call as per magento version 2.2.
+
+-------------------------------- Version 2.0.10 --------------------------------------
+    - Fixed Bundle Product creditmemo issues.
+    - Fixed multi currency order issues.
+    - Fixed order coupon (when admin coupon is applied) issues.
+    - Fixed product quantity save issues when flat catalog on.
+    - Fixed minify html issues.
+    - Fixed configuration product create issue for swatch type attribute option new value.
+    + added dispatch even on order mass approve action.
+    + added short description field to add/edit product at seller dashboard.
+
+-------------------------------- Version 2.0.9 --------------------------------------
+    - Bundle Product issues fixed.
+    + Created Seller Notification popup to notify seller regarding updates in
+        Product List
+        Transaction
+        Order
+    + Created Admin Notification popup to notify Admin regarding updateds in
+        Manage Product
+        Manage Seller
+        Manage Feedback
+    + Added  Tax/VAT field in seller edit profile setting.
+    + Admin can view seller's product before approve.
+
+-------------------------------- Version 2.0.8 --------------------------------------
+    - Fixed currency related issues on seller's order at seller dashboard.
+    - Fixed foreign key issue with marketplace_saleperpartner table.
+
+-------------------------------- Version 2.0.7 --------------------------------------
+    + Updated Composer.json file as per Magento 2.1.x version.
+
+-------------------------------- Version 2.0.6 --------------------------------------
+    - Fixed marketplace_controller_list table insert duplicate data issue.
+    + Allowed seller to add related products, up-sell products and cross-sell products from his dashboard.
+    + Allowed seller to add product limit for customer on product purchase.
+
+-------------------------------- Version 2.0.5 --------------------------------------
+    + Added 3 types of layout for marketplace landing page that will be configurable from admin config settings.
+    + Added Seller Central functionality through which seller can create account from the marketplace sell page.
+    + Created seller registration block call on customer registration page configurable.
+    + Added Order approval required setting at marketplace configuration settings through which seller can only get order place notification and can manage order after order approval by admin.
+
+-------------------------------- Version 2.0.4 --------------------------------------
+    + Changed some files and added a table to make module compatible with webkul seller group module.
+
+-------------------------------- Version 2.0.3 --------------------------------------
+    + Added "Add Video" functionality on product add/edit at seller end.
+    + Added automatic generate seller public urls like
+        profile url - yourwebsite.com/seller-shop-url,
+        collection url - yourwebsite.com/seller-shop-url/collection,
+        location url - yourwebsite.com/seller-shop-url/location,
+        feedback url - yourwebsite.com/seller-shop-url/feedback on seller renderegistration.
+
+-------------------------------- Version 2.0.2 --------------------------------------
+    - Fixed Google Optimizer issue during product add/update if enabled.
+    - Removed "Add Products" and "Remove Products" tab from seller edit page in admin panel.
+    + Added "Product Assignment" tab to render product grid to mass assign products to seller in seller edit page in admin panel.
+    + Make SKU configurable Static/Dynamic for seller's products so that admin can set accordingly.
+    + Added a configuration setting for SKU prefix that admin can configure for seller's products.
+    + Added functionality for not showing select dropdown of "Attribute Set" and "Product Type" for adding product if admin have only set single attribute set and product type respectively.
+    + Updated Seller Dashboard design.
+    + Added "Sales By Locations" chart and "Sales Stats" chart by "year", "month", "week" and "day"  in seller dashboard.
+    + Added "Top Selling Category" pie chart in seller dashboard.
+    + Added "Top Selling Products" (max 5) with sales count in seller dashboard.
+    + Updated Database schema to add foreign key for "seller_id", "mageproduct_id", "order_id".
+    + Updated module version to 2.0.2.
+    + This version 2.0.2 of module will not work with the magento 2.0.X. If want to continue with magento 2.0.X versions then will need to apply webkul marketplace version 2.0.1.
+
+-------------------------------- Version 2.0.1 --------------------------------------
+    - Fixed issues regarding admin ui component grid data provider class.
+    + Update module version to 2.0.1.
+
+-------------------------------- Version 2.0.0 --------------------------------------
+    + Allow to add multi seller with help of the extension
+    + Allow seller to add/update/delete products from their dashboard
+    + Seller can delete his logo and banner from seller's profile
+    + Seller can view hints for fields if enabled and set by admin
+    + Seller can add Return and Shipping policy if enabled by admin
+    + Category and sub category assignment to seller from admin
+    + Product filter by name, date and status in seller's product list
+    + Mass delete of product in seller's product list
+    + Display total Payout and remaining amount of seller's in seller's dashboard
+    + Latest seller's order in seller's dashboard
+    + Seller's order with filter by order id, date and status in seller's orderhistory page
+    + Add seller's order view page with commission and total seller's amount details
+    + Add seller's transaction report with download record in csv and search filter by transaction id and date
+    + TAX management for seller's product from marketplace setting at backend
+    + Product update required setting from marketplace setting at backend
+    + seller policies(return/shipping) enable/disable setting from marketplace setting at backend
+    + Restrict seller to use only some selected categories for adding products from marketplace setting at backend
+    + Make a Review on only Order Purchase setting from marketplace setting at backend
+    + Hint(s) / Guide feature for the fields(for product and profile page) which will be managed by magento Admin
+    + Seller and Product deny from admin panel
+    + Mass approve products and sellers at backend
+    + Admin can see seller's transaction details of total payout at backend
+    + Manage seller's order grid with pay(individual and mass) options for admin at backend.
+    + Attractive Marketplace Landing Page design
+    + Attractive Seller's shop page like profile, collection, feedback, location page
+    + Allow admin to configure marketplace landing page options like- banner, banner content, button label, icons etc
+    + Display top 4 best sell sellers with their top 3 selling products
+    + Allow sellers to manage their orders
+    + Allow sellers to refund their order with return quantity to stock option and add comment option.
+    + Allow customers to search seller by seller shop name in seller list page
+    + Manage seller's total and commission on product refund
+    + Change Marketplace Feedback grid collection in admin panel
+    + Allow seller to add sample url, link sample url and link url for downloadable products
+    + Allow seller to update configurable associate product from seller dashboard
+    + Allow sellers to add social media icons on their profile page
+    + Low stock notification to sellers if enable by admin.
+    + Allow admin to create custom email templates for marketplace email templates.

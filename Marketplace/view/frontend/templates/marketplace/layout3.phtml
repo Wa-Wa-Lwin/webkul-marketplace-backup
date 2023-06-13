@@ -1,0 +1,202 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+$helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+$bannerDisplay      =   $helper->getDisplayBannerLayout3();
+$bannerImage        =   $helper->getBannerImageLayout3();
+$bannerContent      =   $helper->getBannerContentLayout3();
+$marketplacebutton  =   $helper->getBannerButtonLayout3();
+$marketplacelabel1  =   $helper->getMarketplacelabel1Layout3();
+$marketplacelabel2  =   $helper->getMarketplacelabel2Layout3();
+$marketplacelabel3  =   $helper->getMarketplacelabel3Layout3();
+$iconsDisplay       =   $helper->getDisplayIconLayout3();
+$iconImage1         =   $helper->getIconImage1Layout3();
+$iconImage1Label    =   $helper->getIconImageLabel1Layout3();
+$iconImage2         =   $helper->getIconImage2Layout3();
+$iconImage2Label    =   $helper->getIconImageLabel2Layout3();
+$iconImage3         =   $helper->getIconImage3Layout3();
+$iconImage3Label    =   $helper->getIconImageLabel3Layout3();
+$iconImage4         =   $helper->getIconImage4Layout3();
+$iconImage4Label    =   $helper->getIconImageLabel4Layout3();
+$iconImage5         =   $helper->getIconImage5Layout3();
+$iconImage5Label    =   $helper->getIconImageLabel5Layout3();
+$iconSeperatorImage = $this->getViewFileUrl('Webkul_Marketplace::images/landingpage2/icon/sell-page-2-arrow-right.png');
+?>
+<link rel="stylesheet" type="text/css" href="<?= /* @noEscape */  $this->getViewFileUrl('Webkul_Marketplace::css/landingpage_two.css');?>">
+<div class="wk-mp-design wk-mp-landingpage wk-mp-landingpage-layout3">
+    <?php
+    $sellerAccountUrl = $block->getUrl(
+        'marketplace/account/becomeseller',
+        ["_secure" => $this->getRequest()->isSecure()]
+    );
+    ?>
+    <div class="wk-mp-banner-container-layout2">
+        <div class="wk-mp-banner">
+            <?php if ($bannerDisplay) { ?>
+            <div class="wk-list-container wk-mp-header">
+                <div class="wk-mp-header-container">
+                    <?= /* @noEscape */  $block->getCmsFilterContent($bannerContent)?>
+                </div>
+            </div>
+                <?php
+            } ?>
+            <?php if (!$helper->isCustomerLoggedIn()): ?>
+                <?php $sellerAccountUrl = '#register-as-seller';?>
+                <div class="wk-list-container">
+                    <div class="wk-list-container-registration wk-text-transform-left" id="register-as-seller">
+                        <div class="wk-list-container-feature-label"><?= /* @noEscape */  __('Register As Seller')?></div>
+                        <?= $block->getChildHtml('customer_form_register_layout3');?>
+                    </div>
+                </div>
+        <?php endif; ?>
+        </div>
+    </div>
+    <h1 class="wk-marketplace-label"><?= $escaper->escapeHtml($marketplacelabel1)?></h1>
+    <?php
+    if ($iconsDisplay) {?>
+        <div class="wk-mp-icon-container">
+            <div class="wk-mp-icon-wraper">
+                <div class="wk-mp-icon">
+                    <img src="<?= $escaper->escapeUrl($iconImage1) ?>">
+                </div>
+                <span class="wk-marketplace-label-span"><?= $escaper->escapeHtml($iconImage1Label) ?></span>
+            </div>
+            <div class="wk-mp-icon-seperator">
+                <div class="wk-mp-icon">
+                    <img src="<?= $escaper->escapeUrl($iconSeperatorImage) ?>">
+                </div>
+            </div>
+            <div class="wk-mp-icon-wraper">
+                <div class="wk-mp-icon">
+                    <img src="<?= $escaper->escapeUrl($iconImage2) ?>">
+                </div>
+                <span class="wk-marketplace-label-span"><?= $escaper->escapeHtml($iconImage2Label) ?></span>
+            </div>
+            <div class="wk-mp-icon-seperator">
+                <div class="wk-mp-icon">
+                    <img src="<?= $escaper->escapeUrl($iconSeperatorImage) ?>">
+                </div>
+            </div>
+            <div class="wk-mp-icon-wraper">
+                <div class="wk-mp-icon">
+                    <img src="<?= $escaper->escapeUrl($iconImage3) ?>">
+                </div>
+                <span class="wk-marketplace-label-span"><?= $escaper->escapeHtml($iconImage3Label) ?></span>
+            </div>
+            <div class="wk-mp-icon-seperator">
+                <div class="wk-mp-icon">
+                    <img src="<?= $escaper->escapeUrl($iconSeperatorImage) ?>">
+                </div>
+            </div>
+            <div class="wk-mp-icon-wraper">
+                <div class="wk-mp-icon">
+                    <img src="<?= $escaper->escapeUrl($iconImage4) ?>">
+                </div>
+                <span class="wk-marketplace-label-span"><?= $escaper->escapeHtml($iconImage4Label) ?></span>
+            </div>
+            <div class="wk-mp-icon-seperator">
+                <div class="wk-mp-icon">
+                    <img src="<?= $escaper->escapeUrl($iconSeperatorImage) ?>">
+                </div>
+            </div>
+            <div class="wk-mp-icon-wraper">
+                <div class="wk-mp-icon">
+                    <img src="<?= $escaper->escapeUrl($iconImage5) ?>">
+                </div>
+                <span class="wk-marketplace-label-span"><?= $escaper->escapeHtml($iconImage5Label) ?></span>
+            </div>
+        </div>
+        <?php
+    } ?>
+    <h1 class="wk-marketplace-label"><?= $escaper->escapeHtml($marketplacelabel2) ?></h1>
+    <div class="wk-list-container-wrapper wk-text-transform-left">
+        <div class="wk-layout2-box-container">
+            <span class="wk-layout2-box-span-container"><?= /* @noEscape */  __('Huge Buyers');?></span>
+            <span class="wk-layout2-box-span">
+                <span class="wk-layout2-box-span-image"></span>
+            </span>
+            <div class="wk-icon-div"><?= /* @noEscape */  __('Get your product showcased to a huge range of customers, as everyday many user shops from us.');?></div>
+        </div>
+        <div class="wk-layout2-box-container">
+            <span class="wk-layout2-box-span-container"><?= /* @noEscape */  __('Ask Questions');?></span>
+            <span class="wk-layout2-box-span">
+                <span class="wk-layout2-box-span-image wk-layout2-box-span-image-ask"></span>
+            </span>
+            <div class="wk-icon-div"><?= /* @noEscape */  __('If you ever get stuck, let us know and we will help you with the best we have in minimum possible time.');?></div>
+        </div>
+        <div class="wk-layout2-box-container">
+            <span class="wk-layout2-box-span-container"><?= /* @noEscape */  __('Quick Payments');?></span>
+            <span class="wk-layout2-box-span">
+                <span class="wk-layout2-box-span-image wk-layout2-box-span-image-quickpay"></span>
+            </span>
+            <div class="wk-icon-div"><?= /* @noEscape */  __('Once goods have been successfully delivered to respective customers, you can request for payout.');?></div>
+        </div>
+        <div class="wk-layout2-box-container">
+            <span class="wk-layout2-box-span-container"><?= /* @noEscape */  __('Manage Your Orders');?></span>
+            <span class="wk-layout2-box-span">
+                <span class="wk-layout2-box-span-image wk-layout2-box-span-image-order"></span>
+            </span>
+            <div class="wk-icon-div"><?= /* @noEscape */  __('Manage your orders at maximum ease and help customers to have a better shopping experience.');?></div>
+        </div>
+        <div class="wk-layout2-box-container">
+            <span class="wk-layout2-box-span-container"><?= /* @noEscape */  __('Earn Badges');?></span>
+            <span class="wk-layout2-box-span">
+                <span class="wk-layout2-box-span-image wk-layout2-box-span-image-badges"></span>
+            </span>
+            <div class="wk-icon-div"><?= /* @noEscape */  __('Once you climb a milestone you get awarded with a badge, which make you look like more pro.');?></div>
+        </div>
+        <div class="wk-layout2-box-container">
+            <span class="wk-layout2-box-span-container"><?= /* @noEscape */  __('Get Yourself Verified');?></span>
+            <span class="wk-layout2-box-span">
+                <span class="wk-layout2-box-span-image wk-layout2-box-span-image-verified"></span>
+            </span>
+            <div class="wk-icon-div"><?= /* @noEscape */  __('Add a verified brooch to your profile by providing very necessary some business details and documents.');?></div>
+        </div>
+        <div class="wk-layout2-box-container">
+            <span class="wk-layout2-box-span-container"><?= /* @noEscape */  __('Customize Profile');?></span>
+            <span class="wk-layout2-box-span">
+                <span class="wk-layout2-box-span-image wk-layout2-box-span-image-profile"></span>
+            </span>
+            <div class="wk-icon-div"><?= /* @noEscape */  __('Customize your profile with information like profile logo, shop location, shipping and refund policies.');?></div>
+        </div>
+        <div class="wk-layout2-box-container">
+            <span class="wk-layout2-box-span-container"><?= /* @noEscape */  __('Add Media');?></span>
+            <span class="wk-layout2-box-span">
+                <span class="wk-layout2-box-span-image wk-layout2-box-span-image-media"></span>
+            </span>
+            <div class="wk-icon-div"><?= /* @noEscape */  __('Embed video YouTube to make your account more genuine and stand out in the queue.');?></div>
+        </div>
+    </div>
+    <div class="wk-list-container-wrapper wk-text-transform-center">
+        <span class="wk-icon-check-span"><?= $escaper->escapeHtml($marketplacelabel3) ?></span>
+        <div class="primary">
+            <a href="<?= $escaper->escapeUrl($sellerAccountUrl)?>">
+                <button type="submit" class="action submit primary" title="<?= $escaper->escapeHtml($marketplacebutton); ?>">
+                    <span><?= $escaper->escapeHtml($marketplacebutton); ?></span>
+                </button>
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+    require([
+        "jquery",
+        "mage/mage",
+    ], function($){
+        var bannerDisplay = '<?= /* @noEscape */ $bannerDisplay;?>';
+        $('.page-title-wrapper').hide();
+        $('.wk-mp-landingpage').insertBefore('#maincontent');
+        if(bannerDisplay == 1) {
+          $('.wk-mp-banner').css('background-image','url("<?= $escaper->escapeUrl($bannerImage) ?>")');
+        } else {
+          $('.wk-list-container').css('float','right');
+        }
+    });
+</script>

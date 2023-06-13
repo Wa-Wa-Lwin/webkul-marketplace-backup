@@ -1,0 +1,497 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<?php $order = $block->getOrder() ?>
+<?php $items = $block->getItems(); ?>
+<?php
+$paymentCode = '';
+$colSpan = 7;
+if ($order->getPayment()) {
+    $colSpan = 8;
+    $paymentCode = $order->getPayment()->getMethod();
+}
+$orderId = $order->getId();
+$orderHelper = $this->helper(\Webkul\Marketplace\Helper\Orders::class);
+$tracking = $orderHelper->getOrderinfo($orderId);
+$invoiceId = $tracking->getInvoiceId();
+?>
+<form action="<?= $escaper->escapeUrl($block->getUrl('marketplace/order/creditmemo', ['_secure' => $this->getRequest()->isSecure()]))?>" id="marketplace-creditmemo-form" method="post">
+    <div class="order-details-items ordered">
+        <div class="order-title">
+            <strong><?= $escaper->escapeHtml(__('Items Ordered')) ?></strong>
+        </div>
+        <div class="table-wrapper order-items">
+            <table class="data table table-order-items" id="my-orders-table" summary="<?= $escaper->escapeHtml(__('Items Ordered')) ?>">
+                <caption class="table-caption"><?= $escaper->escapeHtml(__('Items Ordered')) ?></caption>
+                <thead>
+                    <tr>
+                        <th class="col name"><?= $escaper->escapeHtml(__('Product Name')) ?></th>
+                        <th class="col price"><?= $escaper->escapeHtml(__('Price')) ?></th>
+                        <th class="col qty"><?= $escaper->escapeHtml(__('Qty')) ?></th>
+                        <th class="col qty"><?= $escaper->escapeHtml(__('Return to Stock')) ?></th>
+                        <th class="col qty"><?= $escaper->escapeHtml(__('Qty to Refund')) ?></th>
+                        <th class="col price"><?= $escaper->escapeHtml(__('Subtotal')) ?></th>
+                        <?php
+                        if ($paymentCode == 'mpcashondelivery') {?>
+                            <th class="col price"><?= $escaper->escapeHtml(__('COD Charges')) ?></th>
+                            <?php
+                        } ?>
+                        <th class="col price"><?= $escaper->escapeHtml(__('Tax Amount')) ?></th>
+                        <th class="col price"><?= $escaper->escapeHtml(__('Discount Amount')) ?></th>
+                        <th class="col price"><?= $escaper->escapeHtml(__('Row Total')) ?></th>
+                    </tr>
+                </thead>
+                <?php
+                $i = 0;
+                $count = count($items);
+                foreach ($items as $item) {
+                    if ($item->getParentItem()) {
+                        continue;
+                    }
+                    $i++;
+                    $codchargesPerItem = 0;
+                    $rowTotal = $item->getMageproPrice()*$item->getQtyToRefund();
+                    $currencyRate = $item->getCurrencyRate();
+                    $totalTaxPerItem = $item->getTotalTax();
+                    $couponAmount = $item->getAppliedCouponAmount();
+                    $result = [];
+                    if ($options = $item->getProductOptions()) {
+                        if (isset($options['options'])) {
+                            $result = array_merge($result, $options['options']);
+                        }
+                        if (isset($options['additional_options'])) {
+                            $result = array_merge($result, $options['additional_options']);
+                        }
+                        if (isset($options['attributes_info'])) {
+                            $result = array_merge($result, $options['attributes_info']);
+                        }
+                    }
+                    // for bundle product
+                    $bundleitems = array_merge([$item], $item->getChildrenItems());
+                    $count = count($bundleitems);
+                    $_index = 0;
+                    $_prevOptionId = '';
+                    ?>
+                    <tbody>
+                        <?php if ($item->getProductType()!='bundle') { ?>
+                            <tr class="border" id="order-item-row-<?= $escaper->escapeHtml($item->getId()) ?>">
+                                <td class="col name" data-th="<?= $escaper->escapeHtml(__('Product Name')); ?>">
+                                    <strong class="product name product-item-name"><?= $escaper->escapeHtml($item->getName()) ?></strong>
+                                    <?php if ($_options = $result): ?>
+                                        <dl class="item-options">
+                                        <?php foreach ($_options as $_option): ?>
+                                            <dt><?= $escaper->escapeHtml($_option['label']) ?></dt>
+                                            <?php if (!$block->getPrintStatus()): ?>
+                                                <?php $_formatedOptionValue = $block->getFormatedOptionValue($_option) ?>
+                                                <dd>
+                                                    <?php if (isset($_formatedOptionValue['full_view'])): ?>
+                                                        <?= /* @noEscape */ $_formatedOptionValue['full_view'] ?>
+                                                    <?php else: ?>
+                                                        <?= /* @noEscape */ $_formatedOptionValue['value'] ?>
+                                                    <?php endif; ?>
+                                                </dd>
+                                            <?php else: ?>
+                                                <dd>
+                                                    <?= /* @noEscape */ nl2br($escaper->escapeHtml((isset($_option['print_value']) ? $_option['print_value'] : $_option['value']))) ?>
+                                                </dd>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                        </dl>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Price')); ?>">
+                                    <span class="price-excluding-tax" data-label="<?= $escaper->escapeHtml(__('Excl. Tax')); ?>">
+                                        <span class="cart-price">
+                                            <?= /* @noEscape */ $order->formatPrice($item->getPrice()); ?>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="col qty" data-th="<?= $escaper->escapeHtml(__('Qty')); ?>">
+                                    <ul class="items-qty">
+                                        <?php if ($item->getQtyOrdered() > 0): ?>
+                                            <li class="item">
+                                                <span class="title"><?= $escaper->escapeHtml(__('Ordered')); ?></span>
+                                                <span class="content"><?= $escaper->escapeHtml($item->getQtyOrdered()*1) ?></span>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if ($item->getQtyInvoiced() > 0): ?>
+                                            <li class="item">
+                                                <span class="title"><?= $escaper->escapeHtml(__('Invoiced')); ?></span>
+                                                <span class="content"><?= $escaper->escapeHtml($item->getQtyInvoiced()*1) ?></span>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if ($item->getQtyShipped() > 0): ?>
+                                            <li class="item">
+                                                <span class="title"><?= $escaper->escapeHtml(__('Shipped')); ?></span>
+                                                <span class="content"><?= $escaper->escapeHtml($item->getQtyShipped()*1) ?></span>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if ($item->getQtyCanceled() > 0): ?>
+                                            <li class="item">
+                                                <span class="title"><?= $escaper->escapeHtml(__('Canceled')); ?></span>
+                                                <span class="content"><?= $escaper->escapeHtml($item->getQtyCanceled()*1) ?></span>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if ($item->getQtyRefunded() > 0): ?>
+                                            <li class="item">
+                                                <span class="title"><?= $escaper->escapeHtml(__('Refunded')); ?></span>
+                                                <span class="content"><?= $escaper->escapeHtml($item->getQtyRefunded()*1) ?></span>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </td>
+                                <td class="col qty" data-th="<?= $escaper->escapeHtml(__('Return to Stock')) ?>">
+                                    <input type="checkbox" name="creditmemo[items][<?= $escaper->escapeHtml($item->getItemId())?>][back_to_stock]" value="1"/>
+                                </td>
+                                <td class="col qty" data-th="<?= $escaper->escapeHtml(__('Qty to Refund')) ?>">
+                                    <input type="text" name="creditmemo[items][<?= $escaper->escapeHtml($item->getItemId())?>][qty]" value="<?= $escaper->escapeHtml($item->getQtyToRefund())?>"/>
+                                </td>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Subtotal')); ?>">
+                                    <?= /* @noEscape */ $order->formatBasePrice($rowTotal);?></td>
+                                <?php
+                                if ($paymentCode == 'mpcashondelivery') {
+                                    $codchargesPerItem = $item->getCodCharges();
+                                    ?>
+                                    <td class="col price" data-th="<?= $escaper->escapeHtml(__('COD Charges')) ?>">
+                                        <?= /* @noEscape */ $order->formatPrice($codchargesPerItem);?>
+                                    </td>
+                                    <?php
+                                } ?>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Tax Total')); ?>">
+                                    <?= /* @noEscape */ $order->formatBasePrice($totalTaxPerItem);?></td>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Discount Total')); ?>">
+                                    <?= /* @noEscape */ $order->formatBasePrice($couponAmount);?></td>
+                                <td class="col subtotal" data-th="<?= $escaper->escapeHtml(__('Row Total')); ?>">
+                                    <?= /* @noEscape */ $order->formatBasePrice($rowTotal+$totalTaxPerItem+$codchargesPerItem-$couponAmount);?></td>
+                            </tr>
+                        <?php } else { ?>
+                            <?php foreach ($bundleitems as $_bundleitem): ?>
+                                <?php
+                                $rowTotal = $_bundleitem->getBasePrice()*$_bundleitem->getQtyToRefund();
+                                $currencyRate = $_bundleitem->getCurrencyRate();
+                                $totalTaxPerItem = $_bundleitem->getTotalTax();
+                                $couponAmount = $_bundleitem->getAppliedCouponAmount();
+                                ?>
+                                <?php $attributes_option = $block->getSelectionAttribute($_bundleitem); ?>
+                                <?php if ($_bundleitem->getParentItem()): ?>
+                                    <?php $attributes = $attributes_option ?>
+                                    <?php if ($_prevOptionId != $attributes['option_id']): ?>
+                                    <tr class="options-label">
+                                        <td class="col label" colspan="9" data-th="<?= $escaper->escapeHtml(__('Product Name')); ?>">
+                                            <?= $escaper->escapeHtml($attributes['option_label']) ?>
+                                        </td>
+                                    </tr>
+                                        <?php $_prevOptionId = $attributes['option_id'] ?>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                                <tr<?= (++$_index==$count)?' class="border bundle"':' class="bundle"' ?> id="order-item-row-<?= $escaper->escapeHtml($_bundleitem->getId()) ?>">
+                                    <?php
+                                    if (!$_bundleitem->getParentItem()) {?>
+                                        <td><h3 class="product-name"><?= $escaper->escapeHtml($_bundleitem->getName()) ?></h3></td>
+                                        <td class="col price" data-rwd-label="<?= $escaper->escapeHtml(__('Price')) ?>"><?= /* @noEscape */ $order->formatPrice($item->getPrice());?></td>
+                                        <td class="col qty item_status" data-rwd-label="<?= $escaper->escapeHtml(__('Status')) ?>">
+                                            <ul class="items-qty">
+                                                <?php if ($_bundleitem->getQtyOrdered() > 0): ?>
+                                                    <li class="item">
+                                                        <span class="title"><?= $escaper->escapeHtml(__('Ordered')); ?></span>
+                                                        <span class="content"><?= $escaper->escapeHtml($_bundleitem->getQtyOrdered()*1) ?></span>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </td>
+                                        <td class="lin-hide">&nbsp;</td>
+                                        <td class="lin-hide">&nbsp;</td>
+                                        <td class="lin-hide">&nbsp;</td>
+                                        <td class="lin-hide">&nbsp;</td>
+                                        <td class="lin-hide">&nbsp;</td>
+                                        <td class="lin-hide">&nbsp;</td>
+                                        <?php
+                                    } else { ?>
+                                        <td class="col value" data-th="<?= $escaper->escapeHtml(__('Product Name')); ?>">
+                                            <?= $block->getValueHtml($_bundleitem)?>
+                                            <?php $addInfoBlock = $block->getOrderItemAdditionalInfoBlock(); ?>
+                                            <?php if ($addInfoBlock): ?>
+                                                <?= $addInfoBlock->setItem($_bundleitem)->toHtml() ?>
+                                            <?php endif;?>
+                                        </td>
+                                        <td class="col price" data-rwd-label="<?= $escaper->escapeHtml(__('Price')) ?>"><?= /* @noEscape */ $order->formatPrice($_bundleitem->getPrice());?></td>
+                                        <td class="col qty item_status" data-rwd-label="<?= $escaper->escapeHtml(__('Status')) ?>">
+                                            <ul class="items-qty">
+                                                <?php if ($_bundleitem->getQtyOrdered() > 0): ?>
+                                                    <li class="item">
+                                                        <span class="title"><?= $escaper->escapeHtml(__('Ordered')); ?></span>
+                                                        <span class="content"><?= $escaper->escapeHtml($_bundleitem->getQtyOrdered()*1) ?></span>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($_bundleitem->getQtyInvoiced() > 0): ?>
+                                                    <li class="item">
+                                                        <span class="title"><?= $escaper->escapeHtml(__('Invoiced')); ?></span>
+                                                        <span class="content"><?= $escaper->escapeHtml($_bundleitem->getQtyInvoiced()*1) ?></span>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($_bundleitem->getQtyShipped() > 0 && !$block->isShipmentSeparately()): ?>
+                                                    <li class="item">
+                                                        <span class="title"><?= $escaper->escapeHtml(__('Shipped')); ?></span>
+                                                        <span class="content"><?= $escaper->escapeHtml($_bundleitem->getQtyShipped()*1) ?></span>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($_bundleitem->getQtyCanceled() > 0): ?>
+                                                    <li class="item">
+                                                        <span class="title"><?= $escaper->escapeHtml(__('Canceled')); ?></span>
+                                                        <span class="content"><?= $escaper->escapeHtml($_bundleitem->getQtyCanceled()*1) ?></span>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($_bundleitem->getQtyRefunded() > 0): ?>
+                                                    <li class="item">
+                                                        <span class="title"><?= $escaper->escapeHtml(__('Refunded')); ?></span>
+                                                        <span class="content"><?= $escaper->escapeHtml($_bundleitem->getQtyRefunded()*1) ?></span>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </td>
+                                        <td class="col qty" data-th="<?= $escaper->escapeHtml(__('Return to Stock')) ?>">
+                                            <input type="checkbox" name="creditmemo[items][<?= $escaper->escapeHtml($_bundleitem->getItemId())?>][back_to_stock]" value="1"/>
+                                        </td>
+                                        <td class="col qty" data-th="<?= $escaper->escapeHtml(__('Qty to Refund')) ?>">
+                                            <input type="text" name="creditmemo[items][<?= /* @noEscape */ $_bundleitem->getItemId()?>][qty]" value="<?= $escaper->escapeHtml($_bundleitem->getQtyToRefund())?>"/>
+                                        </td>
+                                        <td class="col price" data-th="<?= $escaper->escapeHtml(__('Subtotal')); ?>">
+                                            <?= /* @noEscape */ $order->formatBasePrice($rowTotal);?></td>
+                                        <?php
+                                        if ($paymentCode == 'mpcashondelivery') {
+                                            $codchargesPerItem = $item->getCodCharges();
+                                            ?>
+                                            <td class="col price" data-th="<?= $escaper->escapeHtml(__('COD Charges')) ?>">
+                                                <?= /* @noEscape */ $order->formatPrice($codchargesPerItem);?>
+                                            </td>
+                                            <?php
+                                        } ?>
+                                        <td class="col price" data-th="<?= $escaper->escapeHtml(__('Tax Total')); ?>">
+                                            <?= /* @noEscape */ $order->formatBasePrice($totalTaxPerItem);?></td>
+                                        <td class="col price" data-th="<?= $escaper->escapeHtml(__('Discount Total')); ?>">
+                                            <?= /* @noEscape */ $order->formatBasePrice($couponAmount);?></td>
+                                        <td class="col subtotal" data-th="<?= $escaper->escapeHtml(__('Row Total')); ?>">
+                                            <?= /* @noEscape */ $order->formatBasePrice($rowTotal+$totalTaxPerItem+$codchargesPerItem-$couponAmount);?></td>
+                                        <?php
+                                    }?>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php }?>
+                    </tbody>
+                    <?php
+                } ?>
+                <tfoot>
+                    <?php if ($block->isPagerDisplayed()): ?>
+                        <tr>
+                            <td colspan="<?= /* @noEscape */ $colSpan ?>" data-block="order-items-pager-bottom" class="order-pager-wrapper order-pager-wrapper-bottom">
+                                <?= $block->getPagerHtml() ?>
+                            </td>
+                        </tr>
+                    <?php endif ?>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="order-details-items ordered">
+        <div class="table-wrapper order-items">
+            <table class="data table table-order-items" summary="<?= $escaper->escapeHtml(__('Items to Refund')) ?>">
+                <caption class="table-caption"><?= $escaper->escapeHtml(__('Items to Refund')) ?></caption>
+                <thead>
+                    <tr>
+                        <th class="col price"><?= $escaper->escapeHtml(__('Paid Amount')) ?></th>
+                        <th class="col price"><?= $escaper->escapeHtml(__('Refund Amount')) ?></th>
+                        <th class="col price"><?= $escaper->escapeHtml(__('Shipping Amount')) ?></th>
+                        <th class="col price"><?= $escaper->escapeHtml(__('Shipping Refund')) ?></th>
+                        <th class="col price"><?= $escaper->escapeHtml(__('Order Grand Total')) ?></th>
+                    </tr>
+                </thead>
+                <?php
+                $creditmemoTotalAmount = 0;
+                $creditmemoSubtotal = 0;
+                $creditmemoShippingAmount = 0;
+                $creditmemoDiscountAmount = 0;
+                $creditmemoTaxAmount = 0;
+
+                $creditmemoBaseTotalAmount = 0;
+                $creditmemoBaseSubtotal = 0;
+                $creditmemoBaseShippingAmount = 0;
+                $creditmemoBaseDiscountAmount = 0;
+                $creditmemoBaseTaxAmount = 0;
+
+                $creditmemoIds = explode(',', $tracking->getCreditmemoId());
+                $creditmemoCollection = $block->getOrderCreditmemo($creditmemoIds);
+                foreach ($creditmemoCollection as $creditmemo) {
+                    $creditmemoTotalAmount = $creditmemoTotalAmount + $creditmemo['grand_total'];
+                    $creditmemoSubtotal = $creditmemoSubtotal + $creditmemo['subtotal'];
+                    $creditmemoShippingAmount = $creditmemoShippingAmount + $creditmemo['shipping_amount'];
+                    $creditmemoDiscountAmount = $creditmemoDiscountAmount + $creditmemo['discount_amount'];
+                    $creditmemoTaxAmount = $creditmemoTaxAmount + $creditmemo['tax_amount'];
+                    // Calculate Base Amounts
+                    $creditmemoBaseTotalAmount = $creditmemoBaseTotalAmount + $creditmemo['base_grand_total'];
+                    $creditmemoBaseSubtotal = $creditmemoBaseSubtotal + $creditmemo['base_subtotal'];
+                    $creditmemoBaseShippingAmount = $creditmemoBaseShippingAmount + $creditmemo['base_shipping_amount'];
+                    $creditmemoBaseDiscountAmount = $creditmemoBaseDiscountAmount + $creditmemo['base_discount_amount'];
+                    $creditmemoBaseTaxAmount = $creditmemoBaseTaxAmount + $creditmemo['base_tax_amount'];
+                }
+                $invoice = $block->getOrderInvoice($invoiceId);
+                $invoicePaidAmount = $invoice->getGrandTotal();
+                $invoiceSubtotal = $invoice->getSubtotal();
+                $invoiceShippingAmount = $invoice->getShippingAmount();
+                $invoiceDiscountAmount = $invoice->getDiscountAmount();
+                $invoiceTaxAmount = $invoice->getTaxAmount();
+                // Calculate Base Amounts
+                $invoiceBaseGrandTotal = $invoice->getBaseGrandTotal();
+                $invoiceBaseSubtotal = $invoice->getBaseSubtotal();
+                $invoiceBaseShippingAmount = $invoice->getBaseShippingAmount();
+                $invoiceBaseDiscountAmount = $invoice->getBaseDiscountAmount();
+                $invoiceBaseTaxAmount = $invoice->getBaseTaxAmount();
+
+                $subtotal = $invoiceBaseSubtotal - $creditmemoBaseSubtotal;
+                $totalCouponAmount = $invoiceBaseDiscountAmount + $creditmemoBaseDiscountAmount;
+                $totalShippingAmount = $invoiceBaseShippingAmount - $creditmemoBaseShippingAmount;
+                $totalTaxAmount = $invoiceBaseTaxAmount - $creditmemoBaseTaxAmount;
+                $grandTotal = $invoiceBaseGrandTotal - $creditmemoBaseTotalAmount;
+                ?>
+                <tbody>
+                    <tr class="border">
+                        <td class="col price" data-th="<?= $escaper->escapeHtml(__('Paid Amount')) ?>">
+                            <?= /* @noEscape */ $order->formatPrice($invoicePaidAmount); ?>
+                        </td>
+                        <td class="col price" data-th="<?= $escaper->escapeHtml(__('Refund Amount')) ?>">
+                            <?= /* @noEscape */ $order->formatPrice($creditmemoTotalAmount); ?>
+                        </td>
+                        <td class="col price" data-th="<?= $escaper->escapeHtml(__('Shipping Amount')) ?>">
+                            <?= /* @noEscape */ $order->formatPrice($invoiceShippingAmount); ?>
+                        </td>
+                        <td class="col price" data-th="<?= $escaper->escapeHtml(__('Shipping Refund')) ?>">
+                            <?= /* @noEscape */ $order->formatPrice($creditmemoShippingAmount); ?>
+                        </td>
+                        <td class="col price" data-th="<?= $escaper->escapeHtml(__('Order Grand Total')) ?>">
+                            <?= /* @noEscape */ $order->formatPrice($invoicePaidAmount); ?>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="wk-mp-order-info-box">
+        <div class="entry-edit-head"><h4><?= $escaper->escapeHtml(__('Credit Memo Comments')) ?></h4></div>
+        <fieldset id="history_form">
+        <label class="normal" for="creditmemo_comment_text"><?= $escaper->escapeHtml(__('Credit Memo Comments')) ?></label><br/>
+        <textarea id="creditmemo_comment_text" name="creditmemo[comment_text]" rows="3" cols="5" style="width: 100%; margin-left: 0px; margin-right: 0px;"></textarea>
+        </fieldset>
+    </div>
+
+    <div class="wk-mp-order-info-box">
+        <div class="box">
+            <div class="box-right entry-edit">
+                <div class="entry-edit-head"><h4><?= $escaper->escapeHtml(__('Refund Totals')) ?></h4></div>
+                <div class="order-totals">
+                    <table cellspacing="0" width="100%" class="data-table">
+                        <tfoot>
+                            <tr>
+                                <td class="a-right wk-refundtotal-td1">
+                                    <?= $escaper->escapeHtml(__('Subtotal')) ?>
+                                </td>
+                                <td class="a-right wk-refundtotal-td2">
+                                    <span class="price"><?= /* @noEscape */ $order->formatBasePrice($subtotal); ?></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="a-right wk-refundtotal-td1">
+                                    <?= $escaper->escapeHtml(__('Discount')) ?>
+                                </td>
+                                <td class="a-right wk-refundtotal-td2">
+                                    <span class="price">-<?= /* @noEscape */ $order->formatBasePrice($totalCouponAmount); ?></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="a-right wk-refundtotal-td1">
+                                    <?= $escaper->escapeHtml(__('Total Tax')) ?>
+                                </td>
+                                <td class="a-right wk-refundtotal-td2">
+                                    <span class="price"><?= /* @noEscape */ $order->formatBasePrice($totalTaxAmount); ?></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="a-right wk-refundtotal-td1"><?= $escaper->escapeHtml(__('Refund Shipping')) ?></td>
+                                <td class="a-right wk-refundtotal-td2">
+                                    <?php if (($totalShippingAmount)*1) { ?>
+                                        <input type="text" name="creditmemo[shipping_amount]" value="<?= $escaper->escapeHtml($totalShippingAmount); ?>" class="input-text not-negative-amount" style="width:60px;text-align:right" id="shipping_amount">
+                                    <?php } else { ?>
+                                        <span class="price"><?= /* @noEscape */ $order->formatBasePrice($totalShippingAmount)?></span>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="a-right wk-refundtotal-td1"><?= $escaper->escapeHtml(__('Adjustment Refund')) ?></td>
+                                <td class="a-right wk-refundtotal-td2"><input type="text" name="creditmemo[adjustment_positive]" value="0" class="input-text not-negative-amount" style="width:60px;text-align:right" id="adjustment_positive"></td>
+                            </tr>
+                            <tr>
+                                <td class="a-right wk-refundtotal-td1"><?= $escaper->escapeHtml(__('Adjustment Fee')) ?></td>
+                                <td class="a-right wk-refundtotal-td2"><input type="text" name="creditmemo[adjustment_negative]" value="0" class="input-text not-negative-amount" style="width:60px;text-align:right" id="adjustment_negative"></td>
+                            </tr>
+                            <tr class="wk-grandtotal-divider">
+                                <td class="a-left">
+                                    <strong><?= $escaper->escapeHtml(__('Grand Total')) ?></strong>
+                                </td>
+                                <td class="a-right">
+                                    <strong><span class="price"><?= /* @noEscape */ $order->formatBasePrice($grandTotal); ?></span></strong>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <input type="hidden" name="id" value="<?= $escaper->escapeHtml($orderId) ?>">
+                <input type="hidden" name="invoice_id" value="<?= $escaper->escapeHtml($invoiceId) ?>">
+                <input type="hidden" name="creditmemo[do_offline]" id="mp-creditmemo-do-offline" value="0">
+                <!-- for buyer mail -->
+                <div class="order-totals-bottom" style="text-align:right;">
+                    <div class="divider"></div>
+                    <p>
+                        <label class="normal" for="notify-customer"><?= $escaper->escapeHtml(__('Append Comments')) ?></label>
+                        <input id="notify-customer" name="creditmemo[comment_customer_notify]" value="1" type="checkbox" disabled="disabled"/>
+                    </p>
+                    <p>
+                        <label class="normal" for="history_notify"><?= $escaper->escapeHtml(__('Visible on Frontend')) ?></label>
+                        <input id="history_notify" name="creditmemo[is_visible_on_front]" value="1" type="checkbox"/>
+                    </p>
+                    <p>
+                        <label class="normal" for="send-email"><?= $escaper->escapeHtml(__('Email Copy of Credit Memo')) ?></label>
+                        <input id="send-email" name="creditmemo[send_email]" value="1" type="checkbox">
+                    </p>
+                </div>
+
+                <div class="buttons-set wk-order-creditmemo-button">
+                    <button class="button" type="button" id="submit_creditMemo_offline">
+                        <span>
+                            <span>
+                                <?= $escaper->escapeHtml(__('Refund Offline')) ?>
+                            </span>
+                        </span>
+                    </button>
+                    <?php
+                    if ($invoice && $invoice->getTransactionId()) { ?>
+                        <button class="button" type="button" id="submit_creditMemo" title="<?= $escaper->escapeHtml(__('Refund Online')) ?>">
+                            <span>
+                                <span>
+                                    <?= $escaper->escapeHtml(__('Refund')) ?>
+                                </span>
+                            </span>
+                        </button>
+                        <?php
+                    } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

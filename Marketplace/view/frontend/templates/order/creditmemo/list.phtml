@@ -1,0 +1,89 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+$partner=[];
+$helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+$partner = $helper->getSeller();
+$isPartner = $helper->isSeller();
+$order_id = $this->getRequest()->getParam('order_id');
+if ($isPartner == 1) { ?>
+    <div class="wk-mp-design">
+        <fieldset class="fieldset info wk-mp-fieldset">
+            <legend class="legend"><span><?= /* @noEscape */ __('Creditmemo List') ?></span></legend>
+            <div class="order-details-items ordered">
+                <div class="table-wrapper order-items">
+                    <table class="data table table-order-items" summary="<?= /* @noEscape */ __('Creditmemo List') ?>">
+                        <thead>
+                            <tr>
+                                <th class="col price"><?= /* @noEscape */ __('Credit Memos #') ?></th>
+                                <?php if ($helper->getSellerProfileDisplayFlag()) { ?>
+                                <th class="col price"><?= /* @noEscape */ __('Bill To Name') ?></th>
+                                <?php } ?>
+                                <th class="col price"><?= /* @noEscape */ __('Created At') ?></th>
+                                <th class="col price"><?= /* @noEscape */ __('Status') ?></th>
+                                <th class="col price"><?= /* @noEscape */ __('Amount') ?></th>
+                                <th class="col price"><?= /* @noEscape */ __('Action') ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $i = 0;
+                            $order = $block->getOrder();
+                            foreach ($block->getCollection() as $creditmemo) {
+                                $i++;
+                                $creditmemo_id = $creditmemo['entity_id'];
+                                ?>
+                                <tr class="border">
+                                    <td class="col price" data-th="<?= /* @noEscape */ __('Credit Memos #') ?>">
+                                        <?= $escaper->escapeHtml($creditmemo['increment_id']);?>
+                                    </td>
+                                    <?php if ($helper->getSellerProfileDisplayFlag()) { ?>
+                                        <td class="col price" data-th="<?= /* @noEscape */ __('Bill To Name') ?>">
+                                            <?= $escaper->escapeHtml($order->getCustomerName());?>
+                                        </td>
+                                    <?php } ?>
+                                    <td class="col price" data-th="<?= /* @noEscape */ __('Created At') ?>">
+                                        <?= /* @noEscape */ $block->formatDate($creditmemo->getCreatedAt());?>
+                                    </td>
+                                    <td class="col price" data-th="<?= /* @noEscape */ __('Status') ?>">
+                                        <?= /* @noEscape */ __('Refunded');?>
+                                    </td>
+                                    <td class="col price" data-th="<?= /* @noEscape */ __('Amount') ?>">
+                                        <?= /* @noEscape */ $order->formatPrice($creditmemo->getGrandTotal());?>
+                                    </td>
+                                    <td class="col price" data-th="<?= /* @noEscape */ __('Action') ?>">
+                                        <a href="<?= $escaper->escapeUrl($block->getUrl('marketplace/order_creditmemo/view', ['order_id'=>$order_id,'creditmemo_id'=>$creditmemo_id, '_secure' => $this->getRequest()->isSecure()])); ?>">
+                                            <?= /* @noEscape */ __('View'); ?>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <?php
+                            }?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <?php if ($block->getPagerHtml()): ?>
+                <div class="order-products-toolbar toolbar bottom"><?= $block->getPagerHtml(); ?></div>
+            <?php endif ?>
+        </fieldset>
+    </div>
+    <div class="buttons-set">
+        <p class="back-link">
+            <a href="javascript:;" onclick="javascript: window.history.back();" class="left">&laquo; <?= /* @noEscape */ __('Back') ?></a>
+        </p>
+    </div>
+    <?php
+} else { ?>
+    <h2 class="wk-mp-error_msg">
+        <?= /* @noEscape */ __("To Become Seller Please Contact to Admin."); ?>
+    </h2>
+    <?php
+} ?>

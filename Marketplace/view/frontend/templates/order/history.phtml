@@ -1,0 +1,261 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<?php
+    /** @var $block \Webkul\Marketplace\Block\Order\History */
+    $helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+    $orderHelper = $this->helper(\Webkul\Marketplace\Helper\Orders::class);
+    $paramData = $this->getRequest()->getParams();
+    $filterOrderId = '';
+    $filterOrderStatus = '';
+    $filterDateTo = '';
+    $filterDateFrom = '';
+if (isset($paramData['s'])) {
+    $filterOrderId = $paramData['s'] != "" ? $paramData['s']:"";
+}
+if (isset($paramData['orderstatus'])) {
+    $filterOrderStatus = $paramData['orderstatus'] != ""?$paramData['orderstatus']:"";
+}
+if (isset($paramData['from_date'])) {
+    $filterDateFrom = $paramData['from_date'] != ""?$paramData['from_date']:"";
+}
+if (isset($paramData['to_date'])) {
+    $filterDateTo = $paramData['to_date'] != ""?$paramData['to_date']:"";
+}
+
+    $i = 0;
+?>
+<div class="wk-mp-design">
+    <fieldset class="fieldset info wk-mp-fieldset">
+        <legend class="legend">
+            <span class="title"><?= /* @noEscape */ __('My Orders') ?></span>
+            <button class="button wk-mp-btn" type="button" id="shiplightboxopen">
+                <span>
+                    <span>
+                        <?= /* @noEscape */ __('Download All Shipping Slip');?>
+                    </span>
+                </span>
+            </button>
+            <button class="button wk-mp-btn" type="button" id="invoice-lightboxopen">
+                <span>
+                    <span>
+                        <?= /* @noEscape */ __('Download All Invoice Slip');?>
+                    </span>
+                </span>
+            </button>
+        </legend>
+        <div class="grid">
+            <div class="hor-scroll">
+                <form action="<?= $escaper->escapeUrl($block->getCurrentUrl());?>" method="get">
+                    <table cellspacing="0" class="border wk-mp-list-table">
+                        <thead>
+                            <tr id="wk-mp-tr-heading">
+                                <th><span><?= /* @noEscape */ __('Order Id') ?></span></th>
+                                <th><span><?= /* @noEscape */ __('Date') ?></span></th>
+                                <th><span><?= /* @noEscape */ __('Order Status') ?></span></th>
+                                <th><span>&nbsp;</span></th>
+                            </tr>
+                        </thead>
+                        <tbody class="wk-mp-body">
+                            <tr>
+                                <td>
+                                    <input type="text" class="input-text" name="s" placeholder='<?= /* @noEscape */ __('Search by Order Id') ?>' value="<?= $escaper->escapeHtml($filterOrderId)?>" style="width:99%;"/>
+                                </td>
+                                <td>
+                                    <span class="wk-mp-td-span">
+                                        <input name="from_date" id="special-from-date" class="input-text" value="<?= $escaper->escapeHtml($filterDateFrom)?>" type="text" placeholder='<?= /* @noEscape */ __('Date From') ?>'/>
+                                    </span>
+                                    <span class="wk-mp-td-span">
+                                        <input name="to_date" id="special-to-date" class="input-text" value="<?= $escaper->escapeHtml($filterDateTo)?>" type="text" placeholder='<?= /* @noEscape */ __('Date To') ?>'/>
+                                    </span>
+                                </td>
+                                <td>
+                                    <select name="orderstatus" class="input-text">
+                                        <option value=""><?= /* @noEscape */ __('All') ?></option>
+                                        <?php
+                                        $orderstatus_coll = $orderHelper->getOrderStatusData();
+                                        foreach ($orderstatus_coll as $orderstatus) {
+                                            ?>
+                                            <option value="<?= $escaper->escapeHtml($orderstatus['status'])?>" <?php if ($filterOrderStatus == $orderstatus['status']) { echo 'selected="selected"'; }?>>
+                                                <?= $escaper->escapeHtml(__($orderstatus['label'])) ?>
+                                            </option>
+                                            <?php
+                                        }
+                                        ?>
+                                    </select>
+                                </td>
+                                <td class="wk-mp-td-last">
+                                    <button class="button" title="Save" id="save-btn" type="submit">
+                                        <span><span><span><?= /* @noEscape */ __('Submit') ?></span></span></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+                <?php if (!$block->getAllSalesOrder() || !$block->getAllSalesOrder()->getSize()): ?>
+                    <div class="fieldset wk-mp-fieldset">
+                        <div class="wk-emptymsg">
+                            <?= /* @noEscape */ __('No Order Available') ?>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($block->getAllSalesOrder() as $res): ?>
+                        <?php
+                            $order = $block->getMainOrder($res['order_id']);
+                            $state = $order->getState();
+                            $status = $order->getStatus();
+                            $name = $order->getCustomerName();
+                            $tracking = $orderHelper->getOrderinfo($res['order_id']);
+                        if ($tracking->getIsCanceled()) {
+                            $state = 'canceled';
+                            $status = 'Canceled';
+                        }
+
+                            $i++;
+                        ?>
+                        <div class="wk-orderbox <?php if ($i==1) { echo "wk-first-order"; }?>">
+                            <div style="padding:7px 7px 0px 7px;">
+                                <div class="wk-orderbox-content1">
+                                    <div class="wk-orderbox-details wk-order-details-block">
+                                        <div class="color">
+                                            <span class="wk-ordertitle-label"><?= /* @noEscape */ __('Order') ?></span> <strong>#<?= $escaper->escapeHtml($res['magerealorder_id']); ?></strong>
+                                        </div>
+                                        <div class="name wk-order-product-details">
+                                            <?= /* @noEscape */ $block->getpronamebyorder($res['order_id'], true)?>
+                                        </div>
+                                        <a href="<?= $escaper->escapeUrl($block->getUrl('marketplace/order/view', ['id' => $res['order_id'], '_secure' => $this->getRequest()->isSecure()]))?>">
+                                                <button class="button" title="<?= /* @noEscape */ __('View Order') ?>" type="button">
+                                                    <span><span><span><?= /* @noEscape */ __('View Order') ?></span></span></span>
+                                                </button>
+                                            </a>
+                                    </div>
+                                    <div class="wk-dash-orderstatus">
+                                        <label for="name" class="wk-dash-label">
+                                            <div class="status <?= $escaper->escapeHtml(strtolower($state)); ?>"><?= $escaper->escapeHtml(strtoupper($status)); ?> </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="wk-orderbox-content2">
+                                    <div class="wk-orderbox-details">
+                                        <?php if ($helper->getSellerProfileDisplayFlag()): ?>
+                                            <span class="wk-title-label"><?= /* @noEscape */ __('Customer: ');?></span>
+                                            <span class="wk-label"><?= $escaper->escapeHtml($name);?></span>&nbsp;&nbsp;
+                                        <?php endif; ?>
+                                        <span class="wk-title-label"><?= /* @noEscape */ __('Date: ');?></span>
+                                        <span class="wk-label"><?= /* @noEscape */ $block->formatDate($res['created_at'])?></span>
+                                    </div>
+                                    <div class="wk-orderbox-total">
+                                        <span class="wk-title-label"><?= /* @noEscape */ __('Order Total (Base)- ');?></span>
+                                        <span class="wk-label">
+                                            <strong>
+                                                <?php
+                                                    $orderPrice = $block->getPricebyorder($res['order_id']);
+                                                    /* @noEscape */ echo $order->formatBasePrice($orderPrice);
+                                                ?>
+                                            </strong>
+                                        </span>
+                                        <span class="wk-title-label"><?= /* @noEscape */ __('Order Total (Purchased)- ');?></span>
+                                        <span class="wk-label">
+                                            <strong>
+                                                <?= /* @noEscape */ $order->formatPrice($block->getOrderedPricebyorder($res['currency_rate'], $orderPrice)); ?>
+                                            </strong>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="wk-clear"></div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php if ($block->getPagerHtml()): ?>
+            <div class="order-products-toolbar toolbar bottom"><?= $block->getPagerHtml(); ?></div>
+        <?php endif ?>
+    </fieldset>
+</div>
+
+<div id="wk-mp-invoice-print-data">
+    <div class="modals-wrapper">
+        <aside tabindex="0" data-type="popup" data-role="modal" class="modal-popup modal-slide _inner-scroll wk-mp-model-popup">
+            <div tabindex="0" data-role="focusable-start"></div>
+            <div data-role="focusable-scope" class="modal-inner-wrap">
+                <header class="modal-header">
+                    <h4 class="modal-title"><?= /* @noEscape */ __('Download Invoice Slip') ?></h4>
+                    <button type="button" data-role="closeBtn" class="action-close wk-close">
+                        <span>Close</span>
+                    </button>
+                    <span  class="wk-clear" ></span>
+                </header>
+                <form id="form-invoice-print" method="post" action="<?= $escaper->escapeUrl($block->getUrl('marketplace/order_invoice/printall', ['_secure' => $this->getRequest()->isSecure()]));?>" class="fieldset" data-mage-init='{"validation":{}}'>
+                    <div class="modal-body form-list field required">
+                        <label class="label"><?= /* @noEscape */ __('Date From') ?></label>
+                        <input type="text" name="special_from_date" class="required-entry wk-ship-rowinput editdeal_fromdate" id="invoice_editfromdatepicker" readonly />
+
+                        <label class="label"><?= /* @noEscape */ __('Date Untill') ?></label>
+                        <input type="text" id="invoice_edittodatepicker" name="special_to_date" class="required-entry wk-ship-rowinput" value="" readonly/>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="reset" value="<?= /* @noEscape */ __('Reset') ?>" class="wk-btn wk-btn_default"/>
+                        <input type="submit" value="<?= /* @noEscape */ __('Submit') ?>" class="wk-btn wk-btn-primary"/>
+                        <span class="wk-clear"></span>
+                    </div>
+                </form>
+            </div>
+            <div tabindex="0" data-role="focusable-end"></div>
+        </aside>
+    </div>
+</div>
+
+<div id="wk-mp-shipping-print-data">
+    <div class="modals-wrapper">
+        <aside tabindex="0" data-type="popup" data-role="modal" class="modal-popup modal-slide _inner-scroll wk-mp-model-popup">
+            <div tabindex="0" data-role="focusable-start"></div>
+            <div data-role="focusable-scope" class="modal-inner-wrap">
+                <header class="modal-header">
+                    <h4 class="modal-title"><?= /* @noEscape */ __('Download Packaging Slip') ?></h4>
+                    <button type="button" data-role="closeBtn" class="action-close wk-close">
+                        <span>Close</span>
+                    </button>
+                    <span  class="wk-clear" ></span>
+                </header>
+                <form id="form-shipping-print" method="post" action="<?= $escaper->escapeUrl($block->getUrl('marketplace/order_shipment/printall', ['_secure' => $this->getRequest()->isSecure()]));?>" class="fieldset" data-mage-init='{"validation":{}}'>
+                    <div class="modal-body form-list field required">
+                        <label class="label"><?= /* @noEscape */ __('Date From') ?></label>
+                        <input type="text" name="special_from_date" class="required-entry wk-ship-rowinput editdeal_fromdate" id="editfromdatepicker" readonly/>
+
+                        <label class="label"><?= /* @noEscape */ __('Date Untill') ?></label>
+                        <input type="text" id="edittodatepicker" name="special_to_date" class="required-entry wk-ship-rowinput" value="" readonly/>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="reset" value="<?= /* @noEscape */ __('Reset') ?>" class="wk-btn wk-btn_default"/>
+                        <input type="submit" value="<?= /* @noEscape */ __('Submit') ?>" class="wk-btn wk-btn-primary"/>
+                        <span class="wk-clear"></span>
+                    </div>
+                </form>
+            </div>
+            <div tabindex="0" data-role="focusable-end"></div>
+        </aside>
+    </div>
+</div>
+<div class="buttons-set">
+    <p class="back-link">
+        <a href="javascript:;" onclick="javascript: window.history.back();" class="left">&laquo; <?= /* @noEscape */ __('Back') ?></a>
+    </p>
+</div>
+<script type="text/x-magento-init">
+    {
+        "*" : {
+            "sellerOrderHistory" : {}
+        }
+    }
+</script>

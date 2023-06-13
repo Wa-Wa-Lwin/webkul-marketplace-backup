@@ -1,0 +1,221 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+/** @var $block \Webkul\Marketplace\Block\Account\Dashboard */
+
+$helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+$captchaEnableStatus = $helper->getCaptchaEnable();
+$getDateDetail = $block->getDateDetail();
+$totalSaleColl = $block->getTotalSaleColl();
+$totalSale = 0;
+$totalRemainSale = 0;
+foreach ($totalSaleColl as $value) {
+    $totalSale = $value->getAmountReceived();
+    $totalRemainSale = $value->getAmountRemain();
+}
+$totalSaleK = $totalSale / 1000;
+if ((int)$totalSaleK) {
+    $totalSaleToDisplay = $totalSaleK;
+    $totalSaleType = "K";
+} else {
+    $totalSaleToDisplay = $totalSale;
+    $totalSaleType = "";
+}
+$totalLifeTimeSale = $totalSale+$totalRemainSale;
+$totalLifeTimeSaleK = $totalLifeTimeSale / 1000;
+if ((int)$totalLifeTimeSaleK) {
+    $totalLifeTimeSaleToDisplay = $totalLifeTimeSaleK;
+    $totalLifeTimeSaleType = "K";
+} else {
+    $totalLifeTimeSaleToDisplay = $totalLifeTimeSale;
+    $totalLifeTimeSaleType = "";
+}
+?>
+<div class="wk-mp-page-title page-title">
+    <button class="button askque" id="askque"><span><?= /* @noEscape */ __('Ask Question to Admin') ?></span></button>
+</div>
+<div class="wk-mp-design">
+    <div class="wk-mp-dashboard-main-container">
+        <div class="wk-mp-dashboard-main-column">
+            <?= $block->getChildHtml('marketplace_dashboard_totals')?>
+            <div class="wk-mp-dashboard-main-column-block">
+                <div class="wk-mp-dashboard-chart-container">
+                    <div class="wk-mp-dashboard-border">
+                        <div class="wk-mp-dashboard-chart-top-row">
+                            <div class="wk-mp-dashboard-lifetimesale-container">
+                                <div class="wk-mp-dashboard-lifetimesale-title">
+                                    <?= /* @noEscape */ __('Lifetime Sales') ?>
+                                </div>
+                                <div class="wk-mp-dashboard-lifetimesale-value">
+                                    <?= /* @noEscape */ $helper->getFormatedPrice($totalLifeTimeSaleToDisplay).$totalLifeTimeSaleType; ?>
+                                </div>
+                            </div>
+                            <div class="wk-mp-dashboard-totalpayout-container">
+                                <?= /* @noEscape */ __('Total Payout') ?>
+                                <span class="wk-dashboard-sales-value wk-mp-dashboard-totalpayout-value">
+                                    <?= /* @noEscape */ $helper->getFormatedPrice($totalSaleToDisplay).$totalSaleType; ?>
+                                </span>
+                            </div>
+                            <div class="wk-mp-dashboard-chart-dropdown">
+                                <select id="wk-mp-dashboard-chart-select">
+                                    <option value="yearly"><?= /* @noEscape */ __('Yearly') ?></option>
+                                    <option value="monthly"><?= /* @noEscape */ __('Monthly') ?></option>
+                                    <option value="weekly"><?= /* @noEscape */ __('Weekly') ?></option>
+                                    <option value="daily"><?= /* @noEscape */ __('Daily') ?></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="wk-mp-dashboard-chart-main">
+                            <center><?= $block->getChildHtml('locationChart')?></center>
+                        </div>
+                    </div>
+                </div>
+                <div class="wk-mp-dashboard-activity-container">
+                    <div class="wk-mp-dashboard-border">
+                        <div class="wk-mp-dashboard-activity-wrapper">
+                            <div class="wk-mp-dashboard-activity-title">
+                                <?= /* @noEscape */ __("Activities")?>
+                            </div>
+                        </div>
+                        <div class="wk-mp-dashboard-activity-main">
+                            <?= $block->getChildHtml('marketplace_dashboard_notifications')?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="wk-mp-dashboard-right-sidebar">
+            <div class="wk-mp-dashboard-pie-charts-container">
+                <div class="wk-mp-dashboard-pie-charts wk-mp-no-paading-bottom wk-top-selling-category-block">
+                    <div class="wk-mp-dashboard-border">
+                        <div class="wk-mp-dashboard-pie-charts-main wk-mp-no-paading-bottom wk-category-pie-chart">
+                            <small><?= /* @noEscape */ __('Top Selling Category') ?></small>
+                            <div class="wk-top-selling-category-chart">
+                                <?= $block->getChildHtml('categoryChart')?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="wk-mp-dashboard-pie-charts">
+                    <div class="wk-mp-dashboard-border">
+                        <div class="wk-mp-dashboard-pie-charts-main">
+                            <small><?= /* @noEscape */ __('Price Rating') ?></small>
+                            <center><?= $block->getChildHtml('reviewPriceChart')?></center>
+                        </div>
+                    </div>
+                </div>
+                <div class="wk-mp-dashboard-pie-charts">
+                    <div class="wk-mp-dashboard-border">
+                        <div class="wk-mp-dashboard-pie-charts-main">
+                            <small><?= /* @noEscape */ __('Value Rating') ?></small>
+                            <center><?= $block->getChildHtml('reviewValueChart')?></center>
+                        </div>
+                    </div>
+                </div>
+                <div class="wk-mp-dashboard-pie-charts wk-mp-no-paading-bottom">
+                    <div class="wk-mp-dashboard-border">
+                        <div class="wk-mp-dashboard-pie-charts-main wk-mp-last-row">
+                            <small><?= /* @noEscape */ __('Quality Rating') ?></small>
+                            <center><?= $block->getChildHtml('reviewQualityChart')?></center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?= $block->getChildHtml('dashboard_additional_content_block')?>
+    <?= $this->getChildHtml('marketplace_dashboard_latest_orders')?>
+</div>
+<?php if ($helper->getSellerProfileDisplayFlag()) { ?>
+    <?= $this->getChildHtml('marketplace_dashboard_customer_review')?>
+<?php } ?>
+<div class="ask-que">
+    <div id="wk-mp-ask-data">
+        <div class="wk-mp-modals-wrapper">
+            <aside tabindex="0" data-type="popup" data-role="modal" class="modal-popup modal-slide _inner-scroll wk-mp-model-popup">
+                <div tabindex="0" data-role="focusable-start"></div>
+                <div data-role="focusable-scope" class="modal-inner-wrap">
+                    <header class="modal-header">
+                        <h4 class="modal-title"><?= /* @noEscape */ __('Ask Question to Admin') ?></h4>
+                        <button type="button" data-role="closeBtn" class="action-close wk-close">
+                            <span>Close</span>
+                        </button>
+                        <span  class="wk-clear" ></span>
+                    </header>
+                    <form id="ask-form" method="post" action="#" class="fieldset" data-role="ask-form" data-mage-init='{"validation":{}}'>
+                        <div class="modal-body form-list field required">
+                            <label class="label"><?= /* @noEscape */ __('Subject') ?> :</label>
+                            <input type="text" name="subject" class="wk-contact_input_fields required-entry"/>
+                            <label class="label"><?= /* @noEscape */ __('Your Query') ?> :</label>
+                            <textarea  name="ask" class="queryquestion wk-contact_input_fields required-entry" style="width:100%;"></textarea>
+                            <input type="hidden" name="seller-id" value="<?= /* @noEscape */ $block->getCustomerId();?>"/>
+                            <?php
+                            if ($captchaEnableStatus) {?>
+                                <div>
+                                    <span>
+                                        <label for="wk-mp-captcha"><span id="wk-mp-captchalable1"><?= /* @noEscape */ rand(1, 20)?></span> + <span id="wk-mp-captchalable2"><?= /* @noEscape */ rand(1, 20)?></span> =</label>
+                                    </span>
+                                    <input type="text" class="required-entry wk-contact_input_fields" name="wk-mp-captcha" id="wk-mp-captcha" />
+                                </div>
+                                <?php
+                            }?>
+                        </div>
+                        <div class="modal-footer">
+                            <span class="error"></span>
+                            <span class="errormail"></span>
+                            <input type="reset" value="<?= /* @noEscape */ __('Reset') ?>" id="resetbtn" class="wk-btn wk-btn_default"/>
+                            <input type="submit" value="<?= /* @noEscape */ __('Submit') ?>" id="askbtn" class="wk-btn wk-btn-primary clickask"/>
+                            <span class="wk-clear"></span>
+                        </div>
+                    </form>
+                </div>
+                <div tabindex="0" data-role="focusable-end"></div>
+            </aside>
+        </div>
+    </div>
+</div>
+<?php
+$formData = [
+    'loader'                =>$this->getViewFileUrl('images/loader-2.gif'),
+    'mpLocationChartSelector' => '#wk-location-chart',
+    'mpYearLocationChartSelector' => '#wk-location-chart-year',
+    'mpAskDataSelector'     => '#wk-mp-ask-data',
+    'askQueSelector'        => '#askque',
+    'askFormSelector'       => '#ask-form',
+    'askFormInputSelector'  => '#ask-form input',
+    'askFormTextareaSelector' =>'#ask-form textarea',
+    'pageWrapperSelector'   => '.wk-mp-page-wrapper',
+    'mpModelPopupSelector'  => '.wk-mp-model-popup',
+    'showClass'             => '_show',
+    'mageErrorClass'        => 'mage-error',
+    'resetBtnSelector' => '#resetbtn',
+    'wkCloseSelector' => '.wk-close',
+    'validationFailedSelector' => '.validation-failed',
+    'askFormValidationFailedSelector'   =>  '#ask-form .validation-failed',
+    'askFormValidationAdviceSelector'   =>  '#ask-form .validation-advice',
+    'askFormErrorMailSelector'      => '#ask-form .errormail',
+    'askBtnSelector'        =>  '#askbtn',
+    'mpCaptcha1Selector'    =>  '#wk-mp-captchalable1',
+    'mpCaptcha2Selector'    =>  '#wk-mp-captchalable2',
+    'mpCaptchaSelector'     =>  '#wk-mp-captcha',
+    'mailProcssClass'       =>  'mail-procss',
+    'captchaEnableStatus'   =>  $captchaEnableStatus,
+    'ajaxMailSendUrl'       =>  $block->getUrl("marketplace/account/askquestion", ["_secure" => $this->getRequest()->isSecure()]),
+    'ajaxChartUrl'          =>  $block->getUrl("marketplace/account/chart", ["_secure" => $this->getRequest()->isSecure()])
+];
+$serializedFormData = $this->helper(\Magento\Framework\Json\Helper\Data::class)->jsonEncode($formData);
+?>
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "sellerDashboard": <?= /* @noEscape */ $serializedFormData; ?>
+        }
+    }
+</script>

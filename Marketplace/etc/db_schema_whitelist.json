@@ -1,0 +1,362 @@
+{
+    "marketplace_controller_list": {
+        "column": {
+            "entity_id": true,
+            "module_name": true,
+            "controller_path": true,
+            "label": true,
+            "is_child": true,
+            "parent_id": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "marketplace_datafeedback": {
+        "column": {
+            "entity_id": true,
+            "seller_id": true,
+            "buyer_id": true,
+            "buyer_email": true,
+            "status": true,
+            "feed_price": true,
+            "feed_value": true,
+            "feed_quality": true,
+            "feed_nickname": true,
+            "feed_summary": true,
+            "feed_review": true,
+            "created_at": true,
+            "updated_at": true,
+            "seller_pending_notification": true,
+            "admin_notification": true
+        },
+        "index": {
+            "MARKETPLACE_DATAFEEDBACK_SELLER_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MARKETPLACE_DATAFEEDBACK_SELLER_ID_CUSTOMER_ENTITY_ENTITY_ID": true
+        }
+    },
+    "marketplace_feedbackcount": {
+        "column": {
+            "entity_id": true,
+            "seller_id": true,
+            "buyer_id": true,
+            "order_count": true,
+            "feedback_count": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "MARKETPLACE_FEEDBACKCOUNT_SELLER_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MARKETPLACE_FEEDBACKCOUNT_SELLER_ID_CUSTOMER_ENTITY_ENTITY_ID": true
+        }
+    },
+    "marketplace_notification_list": {
+        "column": {
+            "entity_id": true,
+            "notification_id": true,
+            "notification_row_id": true,
+            "type": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "marketplace_orders": {
+        "column": {
+            "entity_id": true,
+            "order_id": true,
+            "product_ids": true,
+            "seller_id": true,
+            "shipment_id": true,
+            "invoice_id": true,
+            "creditmemo_id": true,
+            "is_canceled": true,
+            "shipping_charges": true,
+            "carrier_name": true,
+            "tracking_number": true,
+            "created_at": true,
+            "updated_at": true,
+            "tax_to_seller": true,
+            "total_tax": true,
+            "coupon_amount": true,
+            "refunded_coupon_amount": true,
+            "refunded_shipping_charges": true,
+            "seller_pending_notification": true,
+            "order_status": true
+        },
+        "index": {
+            "MARKETPLACE_ORDERS_ORDER_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MARKETPLACE_ORDERS_ORDER_ID_SALES_ORDER_ENTITY_ID": true
+        }
+    },
+    "marketplace_order_pendingemails": {
+        "column": {
+            "entity_id": true,
+            "seller_id": true,
+            "order_id": true,
+            "myvar1": true,
+            "myvar2": true,
+            "myvar3": true,
+            "myvar4": true,
+            "myvar5": true,
+            "myvar6": true,
+            "myvar8": true,
+            "myvar9": true,
+            "isNotVirtual": true,
+            "sender_name": true,
+            "sender_email": true,
+            "receiver_name": true,
+            "receiver_email": true,
+            "status": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "marketplace_product": {
+        "column": {
+            "entity_id": true,
+            "mageproduct_id": true,
+            "adminassign": true,
+            "seller_id": true,
+            "store_id": true,
+            "status": true,
+            "created_at": true,
+            "updated_at": true,
+            "seller_pending_notification": true,
+            "admin_pending_notification": true,
+            "is_approved": true
+        },
+        "index": {
+            "MARKETPLACE_PRODUCT_MAGEPRODUCT_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MARKETPLACE_PRD_MAGEPRD_ID_CAT_PRD_ENTT_ENTT_ID": true
+        }
+    },
+    "marketplace_saleperpartner": {
+        "column": {
+            "entity_id": true,
+            "seller_id": true,
+            "total_sale": true,
+            "amount_received": true,
+            "last_amount_paid": true,
+            "amount_remain": true,
+            "total_commission": true,
+            "commission_rate": true,
+            "created_at": true,
+            "updated_at": true,
+            "min_order_amount": true,
+            "min_order_status": true,
+            "commission_status": true,
+            "analytic_id": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "marketplace_saleslist": {
+        "column": {
+            "entity_id": true,
+            "mageproduct_id": true,
+            "order_id": true,
+            "order_item_id": true,
+            "parent_item_id": true,
+            "magerealorder_id": true,
+            "magequantity": true,
+            "seller_id": true,
+            "trans_id": true,
+            "cpprostatus": true,
+            "paid_status": true,
+            "magebuyer_id": true,
+            "magepro_name": true,
+            "magepro_price": true,
+            "total_amount": true,
+            "total_tax": true,
+            "total_commission": true,
+            "actual_seller_amount": true,
+            "created_at": true,
+            "updated_at": true,
+            "is_shipping": true,
+            "is_coupon": true,
+            "is_paid": true,
+            "commission_rate": true,
+            "currency_rate": true,
+            "applied_coupon_amount": true,
+            "is_withdrawal_requested": true
+        },
+        "index": {
+            "MARKETPLACE_SALESLIST_ORDER_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MARKETPLACE_SALESLIST_ORDER_ID_SALES_ORDER_ENTITY_ID": true
+        }
+    },
+    "marketplace_sellertransaction": {
+        "column": {
+            "entity_id": true,
+            "transaction_id": true,
+            "onlinetr_id": true,
+            "seller_id": true,
+            "transaction_amount": true,
+            "type": true,
+            "method": true,
+            "custom_note": true,
+            "created_at": true,
+            "updated_at": true,
+            "seller_pending_notification": true
+        },
+        "index": {
+            "MARKETPLACE_SELLERTRANSACTION_SELLER_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MARKETPLACE_SELLERTRANSACTION_SELLER_ID_CSTR_ENTT_ENTT_ID": true
+        }
+    },
+    "marketplace_userdata": {
+        "column": {
+            "entity_id": true,
+            "is_seller": true,
+            "seller_id": true,
+            "payment_source": true,
+            "twitter_id": true,
+            "facebook_id": true,
+            "gplus_id": true,
+            "youtube_id": true,
+            "vimeo_id": true,
+            "instagram_id": true,
+            "pinterest_id": true,
+            "moleskine_id": true,
+            "tw_active": true,
+            "fb_active": true,
+            "gplus_active": true,
+            "youtube_active": true,
+            "vimeo_active": true,
+            "instagram_active": true,
+            "pinterest_active": true,
+            "moleskine_active": true,
+            "others_info": true,
+            "banner_pic": true,
+            "shop_url": true,
+            "shop_title": true,
+            "logo_pic": true,
+            "company_locality": true,
+            "country_pic": true,
+            "company_description": true,
+            "meta_keyword": true,
+            "meta_description": true,
+            "background_width": true,
+            "store_id": true,
+            "contact_number": true,
+            "return_policy": true,
+            "shipping_policy": true,
+            "created_at": true,
+            "updated_at": true,
+            "admin_notification": true,
+            "privacy_policy": true,
+            "allowed_categories": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "marketplace_sellerflag_reason": {
+        "column": {
+            "entity_id": true,
+            "reason": true,
+            "created_at": true,
+            "updated_at": true,
+            "status": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "marketplace_productflag_reason": {
+        "column": {
+            "entity_id": true,
+            "reason": true,
+            "created_at": true,
+            "updated_at": true,
+            "status": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "marketplace_sellerflags": {
+        "column": {
+            "entity_id": true,
+            "seller_id": true,
+            "name": true,
+            "email": true,
+            "reason": true,
+            "created_at": true
+        },
+        "index": {
+            "MARKETPLACE_SELLERFLAGS_SELLER_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MARKETPLACE_SELLERFLAGS_SELLER_ID_CUSTOMER_ENTITY_ENTITY_ID": true
+        }
+    },
+    "marketplace_productflags": {
+        "column": {
+            "entity_id": true,
+            "product_id": true,
+            "name": true,
+            "email": true,
+            "reason": true,
+            "created_at": true
+        },
+        "index": {
+            "MARKETPLACE_PRODUCTFLAGS_PRODUCT_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MARKETPLACE_PRDFLAGS_PRD_ID_CAT_PRD_ENTT_ENTT_ID": true
+        }
+    },
+    "sales_order": {
+        "column": {
+            "order_approval_status": true
+        }
+    },
+    "sales_order_grid": {
+        "column": {
+            "order_approval_status": true
+        }
+    },
+    "wk_mp_wysiwyg_image": {
+        "column": {
+            "entity_id": true,
+            "seller_id": true,
+            "url": true,
+            "name": true,
+            "type": true,
+            "file": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+		<update handle="marketplace_seller_top_header" />
+    <body>
+				<referenceContainer name="content">
+			    <block class="Webkul\Marketplace\Block\Profile" name="marketplace_sellerprofile" template="Webkul_Marketplace::profile.phtml" after="-">
+			        <block class="Webkul\Marketplace\Block\Profile" name="marketplace_sellerprofile_recently_added_products" template="Webkul_Marketplace::seller/profile/recently_added_products.phtml"/>
+			        <block class="Webkul\Marketplace\Block\Profile" name="marketplace_seller_description" template="Webkul_Marketplace::seller/profile/description.phtml"/>
+			        <block class="Webkul\Marketplace\Block\Profile" name="marketplace_sellerprofile_rating" template="Webkul_Marketplace::seller/profile/rating.phtml"/>
+			    </block>
+		    </referenceContainer>
+    </body>
+</page>

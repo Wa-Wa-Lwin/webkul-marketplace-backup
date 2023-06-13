@@ -1,0 +1,333 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+/** @var $block \Webkul\Marketplace\Block\Product\Productlist */
+
+$helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+$paramData = $this->getRequest()->getParams();
+$filter = '';
+$filterStatus = '';
+$filterDateFrom = '';
+$filterDateTo = '';
+if (isset($paramData['s'])) {
+    $filter = $paramData['s'] != '' ? $paramData['s'] : '';
+}
+if (isset($paramData['status'])) {
+    $filterStatus = $paramData['status'] != '' ? $paramData['status'] : '';
+}
+if (isset($paramData['from_date'])) {
+    $filterDateFrom = $paramData['from_date'] != '' ? $paramData['from_date'] : '';
+}
+if (isset($paramData['to_date'])) {
+    $filterDateTo = $paramData['to_date'] != '' ? $paramData['to_date'] : '';
+}
+$_products_coll = $block->getAllProducts();
+if ($helper->getIsProductApproval() || $helper->getIsProductEditApproval()) {
+    $enabledStatusText = __('Approved');
+    $disabledStatusText = __('Pending');
+} else {
+    $enabledStatusText = __('Enabled');
+    $disabledStatusText = __('Disabled');
+}
+$websiteNames = $block->getWebsiteNames();
+?>
+<div class="wk-mp-design">
+    <fieldset class="fieldset info wk-mp-fieldset">
+        <legend class="legend">
+            <span><?= $escaper->escapeHtml(__('Product List')) ?></span>
+        </legend>
+        <div class="grid">
+            <div class="hor-scroll">
+                <form action="<?= $escaper->escapeUrl($block->getUrl('marketplace/product/productlist', ['_secure' => $this->getRequest()->isSecure()]))?>" method="get" id="form-productlist-filter"  name="formProductlistFilter" data-mage-init='{"validation":{}}' autocomplete="off">
+                    <table cellspacing="0" class="border wk-mp-list-table">
+                        <thead>
+                            <tr id="wk-mp-tr-heading">
+                                <th><span><?= $escaper->escapeHtml(__('Product Name')) ?></span></th>
+                                <th><span><?= $escaper->escapeHtml(__('Date')) ?></span></th>
+                                <th><span><?= $escaper->escapeHtml(__('Product Status')) ?></span></th>
+                                <th><span>&nbsp;</span></th>
+                            </tr>
+                        </thead>
+                        <tbody class="wk-mp-body" id="colender-check">
+                            <tr>
+                                <td>
+                                    <input type="text" class="input-text" name="s" placeholder='<?= $escaper->escapeHtml(__('Search by product name')) ?>' value="<?= $escaper->escapeHtml($filter)?>"/>
+                                </td>
+                                <td>
+                                    <span class="wk-mp-td-span">
+                                        <?= $escaper->escapeHtml(__('From: ')) ?>
+                                        <input name="from_date" id="special-from-date" class="input-text" value="<?= $escaper->escapeHtml($filterDateFrom)?>" />
+                                    </span>
+                                    <span class="wk-mp-td-span">
+                                        <?= $escaper->escapeHtml(__('To: ')) ?>
+                                        <input name="to_date" id="special-to-date" class="input-text" value="<?= $escaper->escapeHtml($filterDateTo)?>" />
+                                    </span>
+                                </td>
+                                <td>
+                                    <select name="status" class="input-text">
+                                        <option value=""><?= $escaper->escapeHtml(__('All')) ?></option>
+                                        <option value="1" <?php if ($filterStatus == 1) { echo 'selected="selected"'; }?>>
+                                            <?= /* @noEscape */ $enabledStatusText ?>
+                                        </option>
+                                        <option value="2" <?php if ($filterStatus == 2) { echo 'selected="selected"'; }?>>
+                                            <?= /* @noEscape */ $disabledStatusText ?>
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="button" title="Save" type="submit">
+                                        <span><span><span><?= $escaper->escapeHtml(__('Submit')) ?></span></span></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+                <div data-bind="scope: 'product-list-component'">
+                <?php if ($_products_coll && count($_products_coll)): ?>
+                    <form action="<?= $escaper->escapeUrl($block->getUrl('marketplace/product/massDelete', ['_secure' => $this->getRequest()->isSecure()])) ?>" method="post" id="form-productlist-massdelete" name="formProductlistMassdelete" data-mage-init='{"validation":{}}'>
+                        <?= $block->getBlockHtml('formkey')?>
+                        <button class="button" title="<?= $escaper->escapeHtml(__('Delete Products')) ?>" type="submit" style="float: left;padding: 5px 5px 5px 0;"  id="mass-delete-butn">
+                            <span><span><?= $escaper->escapeHtml(__('Delete Products')) ?></span></span>
+                        </button>
+                            <!-- ko template: getTemplate() --><!-- /ko -->
+                        <table cellspacing="0" class="border wk-mp-list-table wk-mp-list-container-table">
+                            <thead>
+                                <tr class="wk-content">
+                                    <th class="wk-check-first-td">
+                                        <span>
+                                            <input type="checkbox" name="mpselecctall" value="all" id="mpselecctall"/>
+                                        </span>
+                                    </th>
+                                    <th class="wk-first-td">
+                                        <span class="label name">
+                                            <?= $escaper->escapeHtml(__('Product'))?>
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span class="label pro-status">
+                                            <?= $escaper->escapeHtml(__('Type'))?>
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span class="label pro-status">
+                                            <?= $escaper->escapeHtml(__('Status'))?>
+                                        </span>
+                                    </th>
+                                    <th class="wk-list-th-display">
+                                        <span class="label qty">
+                                            <?= $escaper->escapeHtml(__('Qty. Confirmed'))?>
+                                        </span>
+                                    </th>
+                                    <th class="wk-list-th-display">
+                                        <span class="label qty">
+                                            <?= $escaper->escapeHtml(__('Qty. Pending'))?>
+                                        </span>
+                                    </th>
+                                    <th class="wk-list-th-display">
+                                        <span class="label qty">
+                                            <?= $escaper->escapeHtml(__('Qty. Sold'))?>
+                                        </span>
+                                    </th>
+                                    <th class="wk-list-th-display1">
+                                        <span class="label">
+                                            <?= $escaper->escapeHtml(__('Earned Amount'))?>
+                                        </span>
+                                    </th>
+                                    <th class="wk-list-th-display1">
+                                        <span class="label">
+                                            <?= $escaper->escapeHtml(__('Websites'))?>
+                                        </span>
+                                    </th>
+                                    <th>
+                                        <span class="label">
+                                            <?= $escaper->escapeHtml(__('Action'))?>
+                                        </span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $i = 0;
+                                foreach ($block->getAllProducts() as $products) {
+                                    $product = $block->getProductData($products->getMageproductId());
+                                    $websites = [];
+                                    $websiteIds = $product->getWebsiteIds();
+                                    foreach ($websiteIds as $websiteId) {
+                                        if (!isset($websiteNames[$websiteId])) {
+                                            continue;
+                                        }
+                                        $websites[] = $websiteNames[$websiteId];
+                                    }
+                                    $website = implode(', ', $websites);
+                                    $i++;
+                                    $image_url = $block->imageHelperObj()->init($product, 'product_page_image_small')
+                                                ->setImageFile($product->getImage())
+                                                ->getUrl();
+                                    $salesdetail=$block->getSalesdetail($products->getMageproductId());
+                                    $isApprovedBefore = $products['is_approved'];
+                                    ?>
+                                    <tr class="wk-row-view <?= $class = ($i == count($block->getAllProducts()))? 'wk-last_tr':''?>">
+                                        <td class="wk-check-first-td">
+                                            <span>
+                                                <input type="checkbox" name="product_mass_delete[]" class="mpcheckbox" value="<?= $escaper->escapeHtml($products->getMageproductId()); ?>"/>
+                                            </span>
+                                        </td>
+                                        <td class="wk-first_td">
+                                            <input type="hidden" class="hidden-id" value="<?= $escaper->escapeHtml($products->getMageproductId()); ?>" />
+                                            <div class="label name" title="<?= $escaper->escapeHtml($product->getName()); ?>">
+                                                <div class="wk-pro-divide1">
+                                                    <img src="<?= $escaper->escapeUrl($image_url)?>" class="image" />
+                                                </div>
+                                                <div class="wk-pro-divide2">
+                                                    <div style="width:100%;">
+                                                        <?php if ($product->getStatus()==1 && $product->getVisibility()!=1) { ?>
+                                                            <a href="<?= $escaper->escapeUrl($product->getProductUrl())?>" target="_blank">
+                                                        <?php }?>
+                                                            <?= $escaper->escapeHtml($product->getName());?>
+                                                        <?php if ($product->getStatus()==1 && $product->getVisibility()!=1) { ?>
+                                                            </a>
+                                                        <?php }?>
+                                                    </div>
+                                                    <div style="width:100%;float:left;">
+                                                        <?php
+                                                        if ($product->getPrice()*1) {
+                                                            /* @noEscape */ echo $block->getFormatedPrice($product->getPrice(), $helper->getCurrencySymbol());
+                                                        } else {
+                                                            /* @noEscape */ echo $helper->getCurrencySymbol().'0.00';
+                                                        }
+                                                        ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="label pro-status">
+                                                <?= $escaper->escapeHtml($product->getTypeId())?>
+                                            </span>
+                                        </td>
+                                        <?php
+                                        if (($product->getStatus()==2 && !$isApprovedBefore)) {    ?>
+                                            <td>
+                                                <span class="label pro-status">
+                                                    <?= $escaper->escapeHtml($disabledStatusText) ?>
+                                                </span>
+                                            </td>
+                                            <td class="wk-list-th-display">
+                                                <span class="label qty">
+                                                    <?= $escaper->escapeHtml(__('Pending'))?>
+                                                </span>
+                                            </td>
+                                            <td class="wk-list-th-display">
+                                                <span class="label qty">
+                                                    <?= $escaper->escapeHtml(__('Pending'))?>
+                                                </span>
+                                            </td>
+                                            <td class="wk-list-th-display">
+                                                <span class="label qty">
+                                                    <?= $escaper->escapeHtml(__('Pending'))?>
+                                                </span>
+                                            </td>
+                                            <td class="wk-list-th-display1">
+                                                <span class="label qty">
+                                                    <?= $escaper->escapeHtml(__('Pending'))?>
+                                                </span>
+                                            </td>
+                                        <?php } else { ?>
+                                            <?php if ($product->getStatus() == 2) { ?>
+                                                <td>
+                                                    <span class="label pro-status">
+                                                        <?= $escaper->escapeHtml($disabledStatusText) ?>
+                                                    </span>
+                                                </td>
+                                            <?php } else { ?>
+                                                <td>
+                                                    <span class="label pro-status">
+                                                        <?= $escaper->escapeHtml($enabledStatusText) ?>
+                                                    </span>
+                                                </td>
+                                            <?php } ?>
+                                            <td class="wk-list-th-display">
+                                                <span class="label qty">
+                                                    <?= /* @noEscape */ $salesdetail['quantitysoldconfirmed']; ?>
+                                                </span>
+                                            </td>
+                                            <td class="wk-list-th-display">
+                                                <span class="label qty">
+                                                    <?= /* @noEscape */ $salesdetail['quantitysoldpending']; ?>
+                                                </span>
+                                            </td>
+                                            <td class="wk-list-th-display1">
+                                                <span class="label qty">
+                                                    <a href="<?= $escaper->escapeUrl($block->getUrl('marketplace/order/salesdetail/', ['id'=>$product->getId(), '_secure' => $this->getRequest()->isSecure()])); ?>"><?= /* @noEscape */ $salesdetail['quantitysold']; ?></a>
+                                                </span>
+                                            </td>
+                                            <td class="wk-list-th-display">
+                                                <span class="label price">
+                                                    <?= /* @noEscape */ $block->getFormatedPrice($salesdetail['amountearned'], $helper->getCurrencySymbol()); ?>
+                                                </span>
+                                            </td>
+                                            <?php
+                                        }?>
+                                        <td class="wk-list-th-display">
+                                            <span class="label websites">
+                                                <?= /* @noEscape */ $escaper->escapeHtml($website); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="label wk-action">
+                                                <img src="<?= $escaper->escapeUrl($this->getViewFileUrl('Webkul_Marketplace::images/icon-edit.png')); ?>" data-url="<?= $escaper->escapeUrl($block->getUrl('marketplace/product/edit', ['id'=>$product->getId(), '_secure' => $this->getRequest()->isSecure()]))?>" alt="<?= $escaper->escapeHtml(__('Edit'))?>" title="<?= $escaper->escapeHtml(__('Edit'))?>" class="mp-edit"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }?>
+                            </tbody>
+                        </table>
+                    </form>
+                    </div>
+                <?php else: ?>
+                    <div class="wk-emptymsg">
+                        <?= $escaper->escapeHtml(__('No Product Available')) ?>
+                    </div>
+                <?php endif ?>
+            </div>
+        </div>
+        <?php if ($block->getPagerHtml()): ?>
+            <div class="order-products-toolbar toolbar bottom"><?= $block->getPagerHtml(); ?></div>
+        <?php endif ?>
+    </fieldset>
+    <div class="buttons-set">
+        <p class="back-link">
+            <a href="javascript:;" onclick="javascript: window.history.back();" class="left">&laquo; <?= $escaper->escapeHtml(__('Back')) ?></a>
+        </p>
+    </div>
+</div>
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Webkul_Marketplace/js/product/product-date-range": {}
+        }
+    }
+</script>
+<script type="text/x-magento-init">
+        {
+            "*": {
+                "Magento_Ui/js/core/app": {
+                    "components": {
+                        "product-list-component": {
+                            "component": "sellerProductList",
+                            "template" : "Webkul_Marketplace/product-list"
+                        }
+                    }
+                }
+            }
+        }
+</script>

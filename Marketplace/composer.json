@@ -1,0 +1,23 @@
+{
+    "name": "webkul/module-marketplace",
+    "description": "Webkul Magento2 Marketplace Multi Vendor Module",
+    "require": {
+        "magento/module-config": "101.2.*",
+        "magento/module-backend": "102.0.*",
+        "magento/framework": "103.0.*",
+        "magento/module-ui": "101.2.*"
+    },
+    "type": "magento2-module",
+    "version": "5.0.3",
+    "license": [
+        "proprietary"
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Webkul\\Marketplace\\": ""
+        }
+    }
+}

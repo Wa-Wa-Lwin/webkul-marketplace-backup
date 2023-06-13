@@ -1,0 +1,63 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<?php if ($_item = $block->getItem()): ?>
+    <div id="order_item_<?= $block->escapeHtml($_item->getId()) ?>_title"
+         class="product-title">
+        <?= $block->escapeHtml($_item->getName()) ?>
+    </div>
+
+    <div class="product-sku-block">
+        <span><?= $block->escapeHtml(__('SKU')) ?>:</span> <?= /* @noEscape */ implode('<br />', $this->helper(\Magento\Catalog\Helper\Data::class)->splitSku($block->escapeHtml($block->getSku()))); ?>
+
+        <!-- Marketplace seller Name -->
+        <br/>
+        <?php
+            $userInfo = $block->getUserInfo($_item->getProductId());
+        if ($userInfo!='') { ?>
+                <strong>
+                    <?= $block->escapeHtml(__('By Seller')) ?>:
+                </strong>
+                <a href=<?= $block->escapeUrl($block->getCustomerUrl($userInfo['id']));?>>
+                    <?= $block->escapeHtml($userInfo['name'])?>
+                </a>
+                <?php
+        } ?>
+        <!-- end -->
+    </div>
+
+    <?php if ($block->getOrderOptions()): ?>
+        <dl class="item-options">
+            <?php foreach ($block->getOrderOptions() as $_option): ?>
+                <dt><?= /* @escapeNotVerified */ $block->escapeHtml($_option['label']) ?>:</dt>
+                <dd>
+                    <?php if (isset($_option['custom_view']) && $_option['custom_view']): ?>
+                        <?= /* @noEscape */ $block->getCustomizedOptionValue($_option); ?>
+                    <?php else: ?>
+                        <?php $_option = $block->getFormattedOption($_option['value']); ?>
+                        <?= /* @noEscape */ $_option['value']; ?><?php if (isset($_option['remainder']) && $_option['remainder']): ?><span id="<?= /* @noEscape */ $_dots = 'dots' . uniqid()?>"> ...</span><span id="<?= /* @noEscape */ $_id = 'id' . uniqid()?>"><?= /* @noEscape */  $_option['remainder'] ?></span>
+                            <script>
+                                require(['prototype'], function() {
+                                    $('<?= /* @noEscape */ $_id ?>').hide();
+                                    $('<?= /* @noEscape */ $_id ?>').up().observe('mouseover', function(){$('<?= /* @noEscape */ $_id ?>').show();});
+                                    $('<?= /* @noEscape */ $_id ?>').up().observe('mouseover', function(){$('<?= /* @noEscape */ $_dots?>').hide();});
+                                    $('<?= /* @noEscape */ $_id ?>').up().observe('mouseout',  function(){$('<?= /* @noEscape */ $_id ?>').hide();});
+                                    $('<?= /* @noEscape */ $_id ?>').up().observe('mouseout',  function(){$('<?= /* @noEscape */ $_dots ?>').show();});
+                                });
+                            </script>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </dd>
+            <?php endforeach; ?>
+        </dl>
+    <?php endif; ?>
+    <?= $block->escapeHtml($_item->getDescription()) ?>
+<?php endif; ?>

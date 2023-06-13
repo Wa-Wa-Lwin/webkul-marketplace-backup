@@ -1,0 +1,34 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<?php
+    /** @var \Webkul\Marketplace\Block\Adminhtml\Customer\Edit\Tab\Product $block */
+
+    /** @var \Webkul\Marketplace\Block\Adminhtml\Customer\Edit\Tab\Grid\Product $blockGrid */
+    $blockGrid = $block->getBlockGrid();
+    $gridJsObjectName = $blockGrid->getJsObjectName();
+?>
+<?= $block->getGridHtml(); ?>
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Webkul_Marketplace/js/seller/assign-products": {
+                "selectedProducts": <?= /* @noEscape */ $block->getSellerAssignedProductsJson(); ?>,
+                "gridJsObjectName": <?= /* @escapeNotVerified */ '"' . $gridJsObjectName . '"' ?: '{}'; ?>
+            }
+        }
+    }
+</script>
+<!-- @todo remove when "UI components" will support such initialization -->
+<script>
+    require('mage/apply/main').apply();
+</script>
+<input type="hidden" name="sellerassignproid" id="in_adminassign_products" data-form-part="customer_form" value="" />

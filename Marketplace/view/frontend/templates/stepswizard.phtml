@@ -1,0 +1,76 @@
+
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+/** @var $block \Webkul\Marketplace\Block\Component\StepsWizard */
+?>
+<div data-role="steps-wizard-main" class="steps-wizard <?= /* @noEscape */ $block->getData('config/dataScope')?>" data-bind="scope: '<?= /* @noEscape */  $block->getComponentName()?>'">
+    <div data-role="messages" class="messages"></div>
+
+    <div data-role="steps-wizard-controls" class="steps-wizard-navigation">
+        <ul class="nav-bar">
+            <?php foreach ($block->getSteps() as $step) { ?>
+                <li data-role="collapsible" data-bind="css: { 'active': selectedStep() == '<?= /* @noEscape */  $step->getComponentName() ?>'}">
+                    <a href="#<?= /* @noEscape */  $step->getComponentName() ?>"
+                       data-bind="click: showSpecificStep">
+                        <?= /* @noEscape */  $step->getCaption() ?>
+                    </a>
+                </li>
+            <?php } ?>
+        </ul>
+        <div class="nav-bar-outer-actions">
+            <div class="action-wrap" data-role="closeBtn">
+                <button type="button"
+                        class="action-cancel action-tertiary" data-bind="click: close">
+                    <span><?= /* @noEscape */  __('Cancel') ?></span>
+                </button>
+            </div>
+            <div class="action-wrap action-wrap-prev" data-role="step-wizard-prev">
+                <button type="button"
+                        class="action-default action-back-step"
+                        data-bind="click: back, css: { 'disabled': disabled}">
+                    <span><?= /* @noEscape */  __('Back') ?></span>
+                </button>
+            </div>
+            <div class="action-wrap action-wrap-next" data-role="step-wizard-next">
+                <button type="button"
+                        class="action-default action-primary action-next-step" data-bind="click: next">
+                    <span><?= /* @noEscape */  __('Next') ?></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div data-role="steps-wizard-tab">
+        <?php foreach ($block->getSteps() as $step) { ?>
+            <div data-bind="visible: selectedStep() == $element.id, css: {'no-display':false}"
+                 class="content no-display" id="<?= /* @noEscape */ $step->getComponentName() ?>"
+                 data-role="content">
+                <?= /* @noEscape */  $step->getContent() ?>
+            </div>
+        <?php } ?>
+    </div>
+</div>
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Magento_Ui/js/core/app": {
+                "components": {
+                        "<?= /* @noEscape */  $block->getComponentName()?>": {
+                            "component": "Webkul_Marketplace/js/lib/step-wizard",
+                            "initData": <?= /* @noEscape */  $this->helper(\Magento\Framework\Json\Helper\Data::class)->jsonEncode($block->getInitData()) ?>,
+                            "stepsNames": <?= /* @noEscape */  $this->helper(\Magento\Framework\Json\Helper\Data::class)->jsonEncode($block->getStepComponents()) ?>,
+                            "modalClass": "<?= /* @noEscape */ $block->getData('config/dataScope')?>"
+                        }
+                    }
+                }
+            }
+    }
+</script>

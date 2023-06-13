@@ -1,0 +1,317 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<?php
+$helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+$product_hint_status = $helper->getProductHintStatus();
+?>
+<div class="field">
+  <label class="label"><?= $escaper->escapeHtml(__('Product Images')) ?>:</label>
+  <?php
+  if($product_hint_status && $helper->getProductHintImage()){?>
+    <img src="<?= $this->getViewFileUrl('Webkul_Marketplace::images/quest.png'); ?>" class='questimg' title="<?= $helper->getProductHintImage() ?>"/>
+  <?php
+  } ?>
+  <?php if ($helper->getYouTubeApiKey()) { ?>
+    <div class="wk-mp-row">
+        <div class="add-video-button-container">
+            <button id="add_video_button"
+                    title="<?= $escaper->escapeHtml(__('Add Video'));?>"
+                    data-role="add-video-button"
+                    type="button"
+                    class="action-secondary"
+                    data-mage-init='{"openVideoModal" : {}}'
+                    data-ui-id="widget-button-1">
+                <span><?= /* @escapeNotVerified */ $escaper->escapeHtml(__('Add video')) ?></span>
+            </button>
+        </div>
+    </div>
+  <?php } ?>
+  <div id="media_gallery_content"
+       class='gallery'
+       data-mage-init='{"productGallery":{"template":"#media_gallery_content-template"}}'
+       data-images="<?= $escaper->escapeHtml($block->getProductImagesJson()) ?>"
+       data-types="<?= $escaper->escapeHtml(
+           $this->helper(\Magento\Framework\Json\Helper\Data::class)->jsonEncode($block->getProductImageTypes())
+       ) ?>"
+  >
+      <div class="image image-placeholder">
+        <div id="media_gallery_content_Uploader" class="uploader">
+            <div class="fileinput-button form-buttons">
+                <span><?= /* @escapeNotVerified */ $escaper->escapeHtml(__('Browse Files...')) ?></span>
+                <input id="fileupload" type="file" name="image"
+                    data-url="<?= $block->getUrl('marketplace/product_gallery/upload', ['_secure' => $this->getRequest()->isSecure()]) ?>" multiple="multiple" />
+            </div>
+            <div class="clear"></div>
+            <script id="media_gallery_content_Uploader-template" type="text/x-magento-template">
+                <div id="<%- data.id %>" class="file-row">
+                    <span class="file-info"><%- data.name %> (<%- data.size %>)</span>
+                    <div class="progressbar-container">
+                        <div class="progressbar upload-progress" style="width: 0%;"></div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </script>
+        </div>
+        <script>
+          require([
+              "jquery",
+              'mage/template',
+              'Magento_Ui/js/modal/alert',
+              "mage/translate",
+              "jquery/file-uploader"
+          ], function ($, mageTemplate, alert) {
+
+              $('#fileupload').fileupload({
+                  dataType: 'json',
+                  dropZone: '[data-tab-panel=image-management]',
+                  sequentialUploads: true,
+                  acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+                  maxFileSize: <?= $block->getFileSizeService()->getMaxFileSize() ?> ,
+                  add: function (e, data) {
+                      var progressTmpl = mageTemplate('#media_gallery_content_Uploader-template'),
+                          fileSize,
+                          tmpl;
+
+                      $.each(data.files, function (index, file) {
+                          fileSize = typeof file.size == "undefined" ?
+                              $.mage.__('We could not detect a size.') :
+                              byteConvert(file.size);
+
+                          data.fileId = Math.random().toString(33).substr(2, 18);
+
+                          tmpl = progressTmpl({
+                              data: {
+                                  name: file.name,
+                                  size: fileSize,
+                                  id: data.fileId
+                              }
+                          });
+
+                          $(tmpl).appendTo('#media_gallery_content_Uploader');
+                      });
+
+                      $(this).fileupload('process', data).done(function () {
+                          data.submit();
+                      });
+                  },
+                  done: function (e, data) {
+                      if (data.result && !data.result.error) {
+                          $('#media_gallery_content').trigger('addItem', data.result);
+                      } else {
+                          $('#' + data.fileId)
+                              .delay(2000)
+                              .hide('highlight');
+                          alert({
+                             content: $.mage.__('We don\'t recognize or support this file extension type.')
+                          });
+                      }
+                      $('#' + data.fileId).remove();
+                  },
+                  progress: function (e, data) {
+                      var progress = parseInt(data.loaded / data.total * 100, 10);
+                      var progressSelector = '#' + data.fileId + ' .progressbar-container .progressbar';
+                      $(progressSelector).css('width', progress + '%');
+                  },
+                  fail: function (e, data) {
+                      var progressSelector = '#' + data.fileId;
+                      $(progressSelector).removeClass('upload-progress').addClass('upload-failure')
+                          .delay(2000)
+                          .hide('highlight')
+                          .remove();
+                  }
+              });
+              $('#fileupload').fileupload('option', {
+                  process: [{
+                      action: 'load',
+                      fileTypes: /^image\/(gif|jpeg|png)$/
+                  }, {
+                      action: 'resize',
+                      maxWidth: <?= /* @escapeNotVerified */ \Magento\Framework\File\Uploader::MAX_IMAGE_WIDTH ?> ,
+                      maxHeight: <?= /* @escapeNotVerified */ \Magento\Framework\File\Uploader::MAX_IMAGE_HEIGHT ?>
+                  }, {
+                      action: 'save'
+                  }]
+              });
+          });
+        </script>
+        <img class="spacer"
+              src="<?= $block->getViewFileUrl('images/spacer.gif')?>"/>
+        <p class="image-placeholder-text">
+                <?= $escaper->escapeHtml(__('Click here or drag and drop to add images.'));
+                ?></p>
+      </div>
+      <?php
+      foreach ($block->getProductImageTypes() as $typeData) {
+          ?>
+          <input name="<?= /* @escapeNotVerified */ $escaper->escapeHtml($typeData['name']) ?>"
+                 class="image-<?= /* @escapeNotVerified */ $escaper->escapeHtml($typeData['code']) ?>"
+                 type="hidden"
+                 value="<?= /* @escapeNotVerified */ $escaper->escapeHtml($typeData['value']) ?>"/>
+          <?php
+      }
+      ?>
+      <script id="media_gallery_content-template" type="text/x-magento-template">
+          <div class="image item <% if (data.disabled == 1) { %>hidden-for-front<% } %>"
+               data-role="image">
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][position]"
+                     value="<%- data.position %>"
+                     class="position"/>
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][media_type]"
+                     value="<%- data.media_type %>"/>
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][video_provider]"
+                     value="<%- data.video_provider %>"/>
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][file]"
+                     value="<%- data.file %>"/>
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][value_id]"
+                     value="<%- data.value_id %>"/>
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][label]"
+                     value="<%- data.label %>"/>
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][disabled]"
+                     value="<%- data.disabled %>"/>
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][removed]"
+                     value="" class="is-removed"/>
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][video_url]"
+                     value="<%- data.video_url %>"/>
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][video_title]"
+                     value="<%- data.video_title %>"/>
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][video_description]"
+                     value="<%- data.video_description %>"/>
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][video_metadata]"
+                     value="<%- data.video_metadata %>"/>
+              <input type="hidden"
+                     name="product[media_gallery][images][<%- data.file_id %>][role]"
+                     value="<%- data.video_description %>"/>
+              <ul class="type-labels" style="display: none">
+                  <?php
+                  foreach ($block->getProductImageTypes() as $typeData) {
+                      ?>
+                      <li class="type-<?= $escaper->escapeHtml($typeData['code']) ?>">
+                      <?= $escaper->escapeHtml($typeData['label']) ?></li>
+                      <?php
+                  }
+                  ?>
+              </ul>
+              <img class="spacer"
+                   src="<?= /* @escapeNotVerified */ $block->getViewFileUrl('images/spacer.gif')?>"/>
+              <img class="product-image" src="<%- data.url %>" alt="<%- data.label %>"/>
+              <div class="actions" >
+                  <button type="button"
+                          class="action-delete"
+                          data-role="delete-button"
+                          title="<% if (data.media_type == 'external-video') {%>
+                              <?= $escaper->escapeHtml(__('Delete video')) ?>
+                          <%} else {%>
+                              <?= $escaper->escapeHtml(__('Delete image')) ?>
+                          <%}%>">
+                      <span>
+                          <% if (data.media_type == 'external-video') { %>
+                              <?= $escaper->escapeHtml(__('Delete video')) ?>
+                          <% } else {%>
+                              <?= $escaper->escapeHtml(__('Delete image')) ?>
+                          <%} %>
+                      </span >
+                  </button>
+                  <button type="button"
+                          class="action-make-base"
+                          data-role="make-base-button"
+                          title="<?= $escaper->escapeHtml(__('Make Base')) ?>">
+                      <span><?= $escaper->escapeHtml(__('Make Base')) ?></span >
+                  </button >
+                  <div class="draggable-handle" ></div >
+              </div >
+              <div class="image-label"></div>
+              <div class="image-fade"><span><?= $escaper->escapeHtml(__('Hidden')) ?></span></div>
+          </div>
+      </script>
+      <script class="dialog-template" type="text/x-magento-template" data-title="Image Options">
+        <div class="image-panel admin__scope-old ui-tabs-panel ui-widget-content ui-corner-bottom"
+             data-role="dialog"
+             style="display: block">
+            <div class="image-panel-preview">
+                <img src="<%- data.url %>" alt="<%- data.label %>" />
+            </div>
+            <div class="image-panel-controls">
+                <strong class="image-name"><%- data.label %></strong>
+
+                <fieldset class="fieldset fieldset-image-panel">
+                    <div class="field field-image-description">
+                        <label class="label" for="image-description">
+                            <span><?= $escaper->escapeHtml(__('Alt Text'))?></span>
+                        </label>
+                        <div class="control">
+                            <textarea id="image-description"
+                                      rows="3"
+                                      name="product[media_gallery][images][<%- data.file_id %>][label]"><%- data.label %></textarea>
+                        </div>
+                    </div>
+
+                    <div class="field field-image-role">
+                        <label class="label">
+                            <span><?= $escaper->escapeHtml(__('Role'))?></span>
+                        </label>
+                        <div class="control">
+                            <ul class="multiselect-alt">
+                                <?php
+                                foreach ($block->getProductMediaAttributes() as $attribute) :
+                                    ?>
+                                    <li class="item">
+                                        <label>
+                                            <input class="image-type"
+                                                   data-role="type-selector"
+                                                   type="checkbox"
+                                                   value="<?= $escaper->escapeHtml(
+                                                       $attribute->getAttributeCode()
+                                                   ) ?>"
+                                                />
+                                            <?= $escaper->escapeHtml(
+                                                $attribute->getFrontendLabel()
+                                            ) ?>
+                                        </label>
+                                    </li>
+                                <?php
+                                endforeach;
+                                ?>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="field field-image-hide">
+                        <label class="label">
+                            <input type="checkbox"
+                                   data-role="visibility-trigger"
+                                   value="1"
+                                   name="product[media_gallery][images][<%- data.file_id %>][disabled]"
+                            <% if (data.disabled == 1) { %>checked="checked"<% } %> />
+                            <span><?= $escaper->escapeHtml(__('Hide from Product Page'))?></span>
+                        </label>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+      </script>
+      <?php if ($helper->getYouTubeApiKey()) { ?>
+        <?= $block->getChildHtml('new-video'); ?>
+      <?php } ?>
+    </div>
+</div>

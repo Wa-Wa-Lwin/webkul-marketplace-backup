@@ -1,0 +1,184 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<?php
+$imagesDescription = $block->saveImageDesc();
+?>
+<div id="wk_media_gallery_content"
+    class='gallery'
+    data-mage-init='{"descriptionGallary":{"template":"#wk_media_gallery_content-template"}}' 
+    data-images="<?= $escaper->escapeHtml(json_encode($imagesDescription->getData())) ?>"
+>
+<div class="image image-placeholder">
+    <div id="wk_media_gallery_content_Uploader" class="uploader">
+        <div class="fileinput-button form-buttons">
+            <span><?php /* @escapeNotVerified */ echo __('Browse Files...') ?></span>
+            <input id="wkfileupload" type="file" name="image"
+                data-url="<?php echo $block->getUrl('marketplace/wysiwyg_gallery/upload', ['_secure' => $this->getRequest()->isSecure()]) ?>" multiple="multiple" />
+        </div>
+        <div class="clear"></div>
+        <script id="wk_media_gallery_content_Uploader-template" type="text/x-magento-template">
+            <div id="<%- data.id %>" class="file-row">
+                <span class="file-info"><%- data.name %> (<%- data.size %>)</span>
+                <div class="progressbar-container">
+                    <div class="progressbar upload-progress" style="width: 0%;"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </script>
+    </div>
+    <script>
+        require([
+            "jquery",
+            'mage/template',
+            'Magento_Ui/js/modal/alert',
+            "mage/translate",
+            "jquery/file-uploader"
+        ], function ($, mageTemplate, alert) {
+            window.imagesval =  "<?php echo $escaper->escapeHtml(json_encode($imagesDescription->getData())) ?>";
+            $('#wkfileupload').fileupload({
+                dataType: 'json',
+                dropZone: '[data-tab-panel=image-management]',
+                sequentialUploads: true,
+                acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+                maxFileSize: <?php echo $block->getFileSizeService()->getMaxFileSize() ?> ,
+                add: function (e, data) {
+                    var progressTmpl = mageTemplate('#wk_media_gallery_content_Uploader-template'),
+                        fileSize,
+                        tmpl;
+
+                    $.each(data.files, function (index, file) {
+                        fileSize = typeof file.size == "undefined" ?
+                            $.mage.__('We could not detect a size.') :
+                            byteConvert(file.size);
+
+                        data.fileId = Math.random().toString(33).substr(2, 18);
+
+                        tmpl = progressTmpl({
+                            data: {
+                                name: file.name,
+                                size: fileSize,
+                                id: data.fileId
+                            }
+                        });
+
+                        $(tmpl).appendTo('#wk_media_gallery_content_Uploader');
+                    });
+
+                    $(this).fileupload('process', data).done(function () {
+                        data.submit();
+                    });
+                },
+                done: function (e, data) {
+                    if (data.result && !data.result.error) {
+                        $('#wk_media_gallery_content').trigger('addItem', data.result);
+                    } else {
+                        $('#' + data.fileId)
+                            .delay(2000)
+                            .hide('highlight');
+                        alert({
+                            content: $.mage.__('We don\'t recognize or support this file extension type.')
+                        });
+                    }
+                    $('#' + data.fileId).remove();
+                },
+                progress: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    var progressSelector = '#' + data.fileId + ' .progressbar-container .progressbar';
+                    $(progressSelector).css('width', progress + '%');
+                },
+                fail: function (e, data) {
+                    var progressSelector = '#' + data.fileId;
+                    $(progressSelector).removeClass('upload-progress').addClass('upload-failure')
+                        .delay(2000)
+                        .hide('highlight')
+                        .remove();
+                }
+            });
+            $('#wkfileupload').fileupload('option', {
+                process: [{
+                    action: 'load',
+                    fileTypes: /^image\/(gif|jpeg|png)$/
+                }, {
+                    action: 'resize',
+                    maxWidth: <?php /* @escapeNotVerified */ echo \Magento\Framework\File\Uploader::MAX_IMAGE_WIDTH ?> ,
+                    maxHeight: <?php /* @escapeNotVerified */ echo \Magento\Framework\File\Uploader::MAX_IMAGE_HEIGHT ?>
+                }, {
+                    action: 'save'
+                }]
+            });
+        });
+    </script>
+    <img class="spacer"
+            src="<?php echo $block->getViewFileUrl('images/spacer.gif')?>"/>
+    <p class="image-placeholder-text">
+            <?php echo __('Click here to browse images.');
+            ?>
+    </p>
+</div>
+<script id="wk_media_gallery_content-template" type="text/x-magento-template">
+    <div class="image item <% if (data.disabled == 1) { %>hidden-for-front<% } %>"
+        data-role="image">
+        <input type="hidden"
+                name="wysiwyg[media_gallery][images][<%- data.file_id %>][position]"
+                value="<%- data.position %>"
+                class="position"/>
+        <img class="spacer"
+            src="<?php /* @escapeNotVerified */ echo $block->getViewFileUrl('images/spacer.gif')?>"/>
+        <img class="product-image" src="<%- data.url %>" alt="<%- data.label %>"/>
+        <div class="actions" >
+            <button type="button"
+                    class="action-delete"
+                    data-role="delete-button"
+                    title="<% if (data.media_type == 'external-video') {%>
+                        <?php /* @escapeNotVerified */ echo __('Delete video') ?>
+                    <%} else {%>
+                        <?php /* @escapeNotVerified */ echo __('Delete image') ?>
+                    <%}%>">
+                <span>
+                    <% if (data.media_type == 'external-video') { %>
+                        <?php /* @escapeNotVerified */ echo __('Delete video') ?>
+                    <% } else {%>
+                        <?php /* @escapeNotVerified */ echo __('Delete image') ?>
+                    <%} %>
+                </span >
+            </button>
+            <div class="draggable-handle" ></div >
+        </div >
+        <div class="image-label"></div>
+        <div class="image-fade"><span><?php /* @escapeNotVerified */ echo __('Hidden') ?></span></div>
+    </div>
+</script>
+<script class="dialog-template" type="text/x-magento-template" data-title="Image Options">
+    <div class="image-panel admin__scope-old ui-tabs-panel ui-widget-content ui-corner-bottom"
+            data-role="dialog"
+            style="display: block">
+        <div class="image-panel-preview">
+            <img src="<%- data.url %>" alt="<%- data.label %>" />
+        </div>
+        <div class="image-panel-controls">
+            <strong class="image-name"><%- data.label %></strong>
+
+            <fieldset class="fieldset fieldset-image-panel">
+                <div class="field field-image-description">
+                    <label class="label" for="image-description">
+                        <span><?php /* @escapeNotVerified */ echo __('Click to select image!')?></span>
+                    </label>
+                    <div class="control">
+                        <button id="image-description" data-role="select-button"
+                                    rows="3"
+                                    name="wysiwyg[media_gallery][images][<%- data.file_id %>][label]" value="<%- data.url %>"><%- data.label %><?php /* @escapeNotVerified */ echo __('Select Image')?></button>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</script>

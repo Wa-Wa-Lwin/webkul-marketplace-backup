@@ -1,0 +1,69 @@
+<link rel="stylesheet" type="text/css" href="<?= $escaper->escapeUrl($block->getAssetUrl('Webkul_Marketplace::css/owl.carousel.min.css'))?>" type="text/css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="<?= $escaper->escapeUrl($block->getAssetUrl('Webkul_Marketplace::css/owl.theme.default.min.css'))?>" type="text/css" rel="stylesheet">
+<?php
+$helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+$sellerDetails = $block->getSellerDetailsById();
+$imgUrl = $block->getLogoUrl();
+if (count($sellerDetails)) {?>
+  <div class="wk_main"
+      data-time = "<?= /*   @escapeNotVerified */ $escaper->escapeHtml($block->getData('transitionTime')); ?>"
+      data-width = "<?= $escaper->escapeHtml($block->getSliderwidth());?>"
+      data-ratio = "<?= $escaper->escapeHtml($block->getData('ratio'));?>"
+      data-imageheight = "<?= $escaper->escapeHtml($block->getImageHeight());?>"
+      >
+    <div class="owl-carousel" >
+    <?php
+    foreach ($sellerDetails as $sellerId => $sellerData) {
+        $seller_product_count = $helper->getSellerProCount($sellerId);
+        $rating = $helper->getSelleRating($sellerId);
+        $imageValue = $imgUrl.'noimage.png';
+        if ($sellerData['logo_pic'] != '') {
+            $imageValue = $imgUrl.$sellerData['logo_pic'];
+        }
+
+        ?>
+          <div class="item">
+              <a href="<?= /* @escapeNotVerified */ $escaper->escapeUrl($helper->getRewriteUrl('marketplace/seller/profile/shop/'.$sellerData['shop_url'])); ?>">
+                  <img class="wk_image"
+                  src="<?= /* @escapeNotVerified */ $escaper->escapeUrl($imageValue) ; ?>"
+                  alt="image" />
+              </a>
+              <div class="wk-mp-landing-sellers-details">
+                          <div>
+                              <a href="<?= /* @escapeNotVerified */ $escaper->escapeUrl($helper->getRewriteUrl('marketplace/seller/profile/shop/'.$sellerData['shop_url'])); ?>" title="<?= $escaper->escapeHtml(__("View Seller's Shop"))?>">
+                                  <strong><?= $escaper->escapeHtml($sellerData['shop_title']) ?></strong>
+                              </a>
+                          </div>
+                          <div><?= $escaper->escapeHtml(__('%1 Products', $seller_product_count)); ?></div>
+              <div class="wk-seller-rating-block">
+                <div class="wk-seller-rating-value">
+                    <?= $escaper->escapeHtml(number_format($rating, 1)); ?>
+                </div>
+              </div>
+              <div class="seller-collection-actions">
+                              <a href="<?= $escaper->escapeUrl($helper->getRewriteUrl('marketplace/seller/collection/shop/'.$sellerData['shop_url']));?>">
+                                  <button class="button action tocart primary" title="<?= $escaper->escapeHtml(__("View Seller's Collection")) ?>">
+                                      <span>
+                                          <span>
+                                              <?= $escaper->escapeHtml(__('View All')); ?>
+                                          </span>
+                                      </span>
+                                  </button>
+                              </a>
+              </div>
+                      </div>
+          </div>
+        <?php
+    }
+    ?>
+    </div>
+  </div>
+  <script type="text/x-magento-init">
+      {
+          "*": {
+              "WkSellerSlideShow": {}
+          }
+      }
+  </script>
+    <?php
+}

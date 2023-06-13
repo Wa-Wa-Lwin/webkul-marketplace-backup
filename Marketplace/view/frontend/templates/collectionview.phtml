@@ -1,0 +1,213 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<?php
+$helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+$helperOrders = $this->helper(\Webkul\Marketplace\Helper\Orders::class);
+$partner=$block->getProfileDetail();
+if ($partner['shop_url']) {
+    $sellerId = $partner->getSellerId();
+    $analyticStatus = $helper->getAnalyticStatus();
+    if ($analyticStatus) {
+        $analyticId = $helper->getSellerAnalyticId($sellerId);
+    }
+    if ($helper->getActiveColorPicker()) {?>
+        <style>
+            .page-main{
+                background-image:none;
+                background-color:<?= $escaper->escapeHtml($partner['background_width']);?>;
+            }
+        </style>
+        <?php
+    }
+    $_productCollection=$block->_getProductCollection();
+    $bannerpic = $partner->getBannerPic()!=''?$partner->getBannerPic():"banner-image.png";
+    $bannerpic = $helper->getMediaUrl().'avatar/'.$bannerpic;
+
+    $logo = $partner->getLogoPic()!=''?$partner->getLogoPic():"noimage.png";
+    $logo = $helper->getMediaUrl().'avatar/'.$logo;
+
+    $shopUrl = $escaper->escapeHtml($partner['shop_url']);
+    $shoptitle = $escaper->escapeHtml($partner->getShopTitle());
+    if (!$shoptitle) {
+        $shoptitle = $shopUrl;
+    }
+    $sellerId = $partner->getSellerId();
+    $locsearch = $escaper->escapeHtml($partner['company_locality']);
+    ?>
+    <div class="wk_mp_design">
+        <?= $block->getChildHtml("marketplace_seller_top_block")?>
+        <div class="wk-mp-collection-container">
+            <div class="wk-mp-collection-left">
+                <?= $block->getChildHtml('marketplace_sellercollectionleft')?>
+            </div>
+            <div class="wk-mp-collection-right">
+                <div class="block block-account">
+                    <div class="block-title wk-mp-float-left">
+                        <strong><span><h4><?= $escaper->escapeHtml(__("SELLER'S COLLECTION")) ?></h4></span></strong>
+                    </div>
+                    <?php if ($helper->isMpSellerProductSearchModuleInstalled()) {
+                        echo $block->getChildHtml('mp_seller_product_search');
+                    } ?>
+                </div>
+                <div class="page-products page-with-filter fieldset wk-mp-fieldset" <?php if ($_productCollection->count()) { echo 'style="padding: 0;"';}?>>
+                    <?php
+                    $_helper = $this->helper(\Magento\Catalog\Helper\Output::class);
+                    ?>
+                    <?php if (!$_productCollection->count()): ?>
+                        <div class="message info empty"><div><?= /* @escapeNotVerified */ $escaper->escapeHtml(__('We can\'t find products matching the selection.')) ?></div></div>
+                    <?php else: ?>
+                        <?= $block->getToolbarHtml() ?>
+                        <?= $block->getAdditionalHtml() ?>
+                        <?php
+                        if ($block->getMode() == 'grid') {
+                            $viewMode = 'grid';
+                            $image = 'category_page_grid';
+                            $showDescription = false;
+                            $templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW;
+                        } else {
+                            $viewMode = 'list';
+                            $image = 'category_page_list';
+                            $showDescription = true;
+                            $templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::FULL_VIEW;
+                        }
+                        /**
+                        * Position for actions regarding image size changing in vde if needed
+                        */
+                        $pos = $block->getPositioned();
+                        ?>
+                        <div class="products wrapper <?= /* @noEscape */ $viewMode; ?> products-<?= /* @noEscape */ $viewMode; ?>">
+                            <?php $iterator = 1; ?>
+                            <ol class="product-items widget-product-grid">
+                                <?php /** @var $_product \Magento\Catalog\Model\Product */ ?>
+                                <?php foreach ($_productCollection as $_product): ?>
+                                    <?= /* @escapeNotVerified */ ($iterator++ == 1) ? '<li class="product-li four-blocks">' : '</li><li class="product-li four-blocks">' ?>
+                                    <div class="product-item-info" data-container="product-grid">
+                                        <?php
+                                        $productImage = $block->getImage($_product, $image);
+                                        if ($pos != null) {
+                                            $position = ' style="left:' . $productImage->getWidth() . 'px;'
+                                                . 'top:' . $productImage->getHeight() . 'px;"';
+                                        }
+                                        ?>
+                                        <?php // Product Image ?>
+                                        <a href="<?= $escaper->escapeUrl($_product->getProductUrl()) ?>" class="product photo product-item-photo" tabindex="-1">
+                                            <?= $productImage->toHtml(); ?>
+                                        </a>
+                                        <div class="product-item-details" style="margin-left: 15px; margin-top: -55px;">
+                                            <?php
+                                                $_productNameStripped = $block->stripTags($_product->getName(), null, true);
+                                            ?>
+                                            <strong class="product name product-item-name">
+                                                <a class="product-item-link"
+                                                href="<?= $escaper->escapeUrl($_product->getProductUrl()) ?>">
+                                                    <?= /* @noEscape */ $_helper->productAttribute($_product, $_product->getName(), 'name'); ?>
+                                                </a>
+                                            </strong>
+                                            <?= $block->getReviewsSummaryHtml($_product, $templateType); ?>
+                                            <?= /* @noEscape */ $block->getProductPrice($_product) ?>
+                                            <?= $block->getProductDetailsHtml($_product); ?>
+
+                                            <div class="product-item-inner">
+                                                <div class="product actions product-item-actions"<?= /* @noEscape */  strpos($pos, $viewMode . '-actions') ? $position : ''; ?>>
+                                                    <div class="actions-primary"<?= /* @noEscape */  strpos($pos, $viewMode . '-primary') ? $position : ''; ?>>
+                                                        <?php if ($_product->isSaleable()): ?>
+                                                            <?php $postParams = $block->getAddToCartPostParams($_product); ?>
+                                                            <form data-role="tocart-form" action="<?= /* @noEscape */  $postParams['action']; ?>" method="post">
+                                                                <input type="hidden" name="product" value="<?=/* @noEscape */  $postParams['data']['product']; ?>">
+                                                                <input type="hidden" name="uenc" value="<?= /* @noEscape */ $postParams['data']['uenc']; ?>">
+                                                                <?= $block->getBlockHtml('formkey')?>
+                                                                <button type="submit"
+                                                                        title="<?= $escaper->escapeHtml(__('Add to Cart')); ?>"
+                                                                        class="action tocart primary">
+                                                                    <span><?= $escaper->escapeHtml(__('Add to Cart')) ?></span>
+                                                                </button>
+                                                            </form>
+                                                        <?php else: ?>
+                                                            <?php if ($_product->getIsSalable()): ?>
+                                                                <div class="stock available"><span><?= $escaper->escapeHtml(__('In stock')) ?></span></div>
+                                                            <?php else: ?>
+                                                                <div class="stock unavailable"><span><?= $escaper->escapeHtml(__('Out of stock')) ?></span></div>
+                                                            <?php endif; ?>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <div data-role="add-to-links" class="actions-secondary"<?= /* @noEscape */ strpos($pos, $viewMode . '-secondary') ? $position : ''; ?>>
+                                                        <?php if ($this->helper(\Magento\Wishlist\Helper\Data::class)->isAllow()): ?>
+                                                            <a href="#"
+                                                            class="action towishlist"
+                                                            title="<?= $escaper->escapeHtml(__('Add to Wish List')); ?>"
+                                                            aria-label="<?= $escaper->escapeHtml(__('Add to Wish List')); ?>"
+                                                            data-post='<?= /* @noEscape */ $block->getAddToWishlistParams($_product); ?>'
+                                                            data-action="add-to-wishlist"
+                                                            role="button">
+                                                                <span><?= $escaper->escapeHtml(__('Add to Wish List')) ?></span>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                        <?php
+                                                        $compareHelper = $this->helper(\Magento\Catalog\Helper\Product\Compare::class);
+                                                        ?>
+                                                        <a href="#"
+                                                        class="action tocompare"
+                                                        title="<?= $escaper->escapeHtml(__('Add to Compare')); ?>"
+                                                        aria-label="<?= $escaper->escapeHtml(__('Add to Compare')); ?>"
+                                                        data-post='<?= /* @noEscape */ $compareHelper->getPostDataParams($_product); ?>'
+                                                        role="button">
+                                                            <span><?= $escaper->escapeHtml(__('Add to Compare')) ?></span>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <?php if ($showDescription):?>
+                                                    <div class="product description product-item-description">
+                                                        <?= /* @noEscape */ $_helper->productAttribute($_product, $_product->getShortDescription(), 'short_description') ?>
+                                                        <a href="<?= $escaper->escapeUrl($_product->getProductUrl()) ?>" title="<?= /* @noEscape */ $_productNameStripped ?>"
+                                                        class="action more"><?= $escaper->escapeHtml(__('Learn More')) ?></a>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?= ($iterator == count($_productCollection)+1) ? '</li>' : '' ?>
+                                <?php endforeach; ?>
+                            </ol>
+                        </div>
+                        <?= $block->getToolbarHtml() ?>
+                        <?php if (!$block->isRedirectToCartEnabled()): ?>
+                            <script type="text/x-magento-init">
+                            {
+                                "[data-role=tocart-form], .form.map.checkout": {
+                                    "catalogAddToCart": {}
+                                }
+                            }
+                            </script>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php if ($analyticStatus && $analyticId) {?>
+        <script>
+            require([
+                'jquery',
+                'mage/cookies'
+            ], function($) {
+                var analyticId = "<?= $analyticId ?>";
+                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                    })(window,document,'script','https://www.google-analytics.com/analytics.js','wkga');
+
+                    wkga('create', analyticId, {'name':'seller'});
+                    wkga('seller.send', 'pageview');
+            });
+        </script>
+    <?php }?>
+<?php }  ?>

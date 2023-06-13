@@ -1,0 +1,130 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+/** @var $block \Webkul\Marketplace\Block\Transaction\View */
+
+$helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+$collection = $block->sellertransactionDetails();
+$ordersList = $block->sellertransactionOrderDetails($this->getRequest()->getParam('id'));
+?>
+<div class="wk-mp-design">
+    <fieldset class="fieldset info wk-mp-fieldset">
+        <legend class="legend"><span><?= $escaper->escapeHtml(__('Transaction Id %1 - %2', $collection->getTransactionId(), __('Paid'))) ?></span></legend>
+        <div class="wk-mp-order-info-box">
+            <div>
+                <div class="box">
+                    <div class="box-title">
+                        <h2><?= $escaper->escapeHtml(__('Transaction Information')) ?></h2>
+                    </div>
+                    <div class="box-content">
+                        <div class="wk_row">
+                            <span class="label"><?= $escaper->escapeHtml(__('Date'))?> : </span>
+                            <span class="value"><?= /* @noEscape */ $block->formatDate($collection->getCreatedAt(), \IntlDateFormatter::LONG); ?></span>
+                        </div>
+                        <div class="wk_row">
+                            <span class="label"><?= $escaper->escapeHtml(__('Amount'))?> : </span>
+                            <span class="value"><?= /* @noEscape */ $block->getFormatedPrice($collection->getTransactionAmount()); ?></span>
+                        </div>
+                        <div class="wk_row">
+                            <span class="label"><?= $escaper->escapeHtml(__('Type'))?> : </span>
+                            <span class="value"><?= /* @noEscape */ $collection->getType(); ?></span>
+                        </div>
+                        <div class="wk_row">
+                            <span class="label"><?= $escaper->escapeHtml(__('Method'))?> : </span>
+                            <span class="value"><?= /* @noEscape */ $collection->getMethod(); ?></span>
+                        </div>
+                        <div class="wk_row">
+                            <?php
+                            if ($collection->getCustomNote()) {
+                                $customnote = $collection->getCustomNote();
+                            } else {
+                                $customnote = __('None');
+                            }
+                            ?>
+                            <span class="label"><?= $escaper->escapeHtml(__('Comment Message'))?> : </span>
+                            <span class="value"><?= $escaper->escapeHtml($customnote); ?></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="order-details-items ordered">
+            <div class="table-wrapper order-items">
+                <h2 class="table-caption"><?= $escaper->escapeHtml(__('Transaction Order Information')) ?></h2>
+                <table class="data table table-order-items" summary="<?= $escaper->escapeHtml(__('Order List Per Product')) ?>">
+                    <thead>
+                        <tr>
+                            <th class="col price"><?= $escaper->escapeHtml(__('Order #')) ?></th>
+                            <th class="col price"><?= $escaper->escapeHtml(__('Product Name')) ?></th>
+                            <th class="col price"><?= $escaper->escapeHtml(__('Price')) ?></th>
+                            <th class="col price"><?= $escaper->escapeHtml(__('Qty')) ?></th>
+                            <th class="col price"><?= $escaper->escapeHtml(__('Total Price')) ?></th>
+                            <th class="col price"><?= $escaper->escapeHtml(__('Total Tax')) ?></th>
+                            <th class="col price"><?= $escaper->escapeHtml(__('Total Discount')) ?></th>
+                            <th class="col price"><?= $escaper->escapeHtml(__('Total Shipping')) ?></th>
+                            <th class="col price"><?= $escaper->escapeHtml(__('Commission')) ?></th>
+                            <th class="col price"><?= $escaper->escapeHtml(__('Subtotal')) ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                            $i = 0;
+                            $_count = count($ordersList);
+                            $subtotal = 0;
+                        ?>
+                        <?php foreach ($ordersList as $item): ?>
+                            <?php
+                                $i++;
+                                $mageorderid = $item->getOrderId();
+                                $sellerId = $item->getSellerId();
+                                $subtotal = $subtotal + $item->getActualSellerAmount();
+                                $totalShipping = 0;
+                            if ($item->getIsShipping()) {
+                                $totalShipping = $block->sellerOrderShippingAmount(
+                                    $sellerId,
+                                    $mageorderid
+                                );
+                            }
+                            ?>
+                            <tr class="border">
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Order #')) ?>"><?= $escaper->escapeHtml($item->getMagerealorderId());?></td>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Product Name')) ?>"><?= $escaper->escapeHtml($item['magepro_name']);?></td>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Price')) ?>"><?= /* @noEscape */ $block->getFormatedPrice($item->getMageproPrice());?></td>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Qty')) ?>"><?= $escaper->escapeHtml($item->getMagequantity());?></td>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Total Price')) ?>"><?= /* @noEscape */ $block->getFormatedPrice($item->getTotalAmount());?></td>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Total Tax')) ?>"><?= /* @noEscape */ $block->getFormatedPrice($item->getTotalTax());?></td>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Coupon Amount')) ?>"><?= /* @noEscape */ $block->getFormatedPrice($item->getAppliedCouponAmount());?></td>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Total Shipping')) ?>"><?= /* @noEscape */ $block->getFormatedPrice($totalShipping);?></td>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Admin Commission')) ?>"><?= /* @noEscape */ $block->getFormatedPrice($item->getTotalCommission());?></td>
+                                <?php
+                                    $admintotaltax = 0;
+                                    $vendortotaltax = 0;
+                                if (!$helper->getConfigTaxManage()) {
+                                    $admintotaltax = $item->getTotalTax();
+                                } else {
+                                    $vendortotaltax = $item->getTotalTax();
+                                }
+                                ?>
+                                <td class="col price" data-th="<?= $escaper->escapeHtml(__('Subtotal')) ?>">
+                                    <?= /* @noEscape */ $block->getFormatedPrice($item->getActualSellerAmount()+$vendortotaltax+$totalShipping-$item->getAppliedCouponAmount());?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<div class="buttons-set">
+    <p class="back-link">
+        <a href="javascript:;" onclick="javascript: window.history.back();" class="left">&laquo; <?= $escaper->escapeHtml(__('Back')) ?></a>
+    </p>
+</div>

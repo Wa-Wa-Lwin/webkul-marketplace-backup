@@ -1,0 +1,125 @@
+.wk-mp-landingpage-layout1 *, .wk-mp-landingpage-layout2 *, .wk-mp-landingpage-layout3 * {
+    box-sizing: border-box;
+}
+
+.wk-mp-landingpage-layout3  .wk-mp-header {
+    width: 63% !important;
+}
+
+.wk-mp-landingpage.wk-mp-landingpage-layout3 .wk-list-container {
+    width: 37%;
+}
+
+
+body .wk-mp-landingpage .form.create.account .info .field,
+body .wk-mp-landingpage .form.create.account .account .password,
+body .wk-mp-landingpage .form.create.account .account .confirmation {
+    width: 50%;
+    padding-right: 10px;
+    float: left;
+}
+body .wk-mp-landingpage .form.create.account .info .field.field-name-lastname {
+    padding-left: 10px;
+    padding-right: 0px;
+}
+body .wk-mp-landingpage .form.create.account .account .confirmation {
+    padding-left: 10px;
+    padding-right: 0px;
+}
+body .wk-mp-landingpage .form.create.account .account input[type="email"] {
+    width: 100%;
+}
+.wk-mp-landingpage.wk-mp-design input[type="text"],
+.wk-mp-landingpage.wk-mp-design input[type="email"],
+.wk-mp-landingpage.wk-mp-design input[type="password"] {
+    width: 100%;
+}
+.wk-mp-landingpage #wk-termsconditions-box input {
+    vertical-align: middle;
+    margin-top: 0px;
+}
+.wk-mp-landingpage #wk-termsconditions-box label {
+    vertical-align: middle;
+}
+.wk-mp-landingpage .wk-list-container-registration .actions-toolbar {
+    margin-top: 15px;
+}
+.wk-mp-landingpage-layout3 .wk-mp-icon-seperator {
+    width: 60px;
+    text-align: center;
+}
+.wk-mp-landingpage-layout3 .wk-layout2-box-container {
+    display: inline-block;
+    float: none;
+    vertical-align: top;
+    min-height: 300px;
+    height: auto;
+}
+.wk-mp-landingpage-layout3 .wk-list-container-wrapper {
+    text-align: center;
+}
+
+.wk-mp-landingpage .wk-mp-banner-container {
+    width: 100%;
+}
+body .wk-mp-landingpage ul {
+    width: 100%;
+}
+body .wk-mp-landingpage .wk-list-container {
+    width: 50%;
+    padding: 15px;
+}
+.wk-mp-icon-container.wk-mp-landingpage-one-icon-container {
+    font-size: 0;
+}
+.wk-mp-landingpage-one-icon-container .wk-mp-icon-wraper {
+    padding: 0px 15px;
+    width: 25%;
+    vertical-align: top;
+}
+.wk-mp-landingpage-one-icon-container .wk-mp-icon {
+    width: auto;
+}
+.wk-mp-landingpage-one-icon-container .wk-marketplace-label-span {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+@media only screen and (max-width: 640px) {
+    .wk-mp-landingpage-one-icon-container .wk-mp-icon-wraper {
+        width: 50%;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+}
+
+@media only screen and (max-width: 420px) {
+    .wk-mp-landingpage-one-icon-container .wk-mp-icon-wraper {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+}
+
+body .wk-list-container-wrapper {
+    width: 100%;
+    max-width: 900px;
+    padding: 25px 15px;
+}
+
+.wk-mp-landingpage-layout2.wk-mp-landingpage .wk-list-container {
+    float: left;
+}
+.wk-mp-landingpage-layout2.wk-mp-landingpage .wk-list-container > ul{
+    padding: 0px;
+    margin: 0px;
+}
+@media (max-width: 640px) {
+    body .wk-mp-landingpage .wk-list-container {
+        width: 100%;
+    }
+    .wk-mp-landingpage-layout2.wk-mp-landingpage .wk-list-container {
+        float: left;
+        padding: 0 10px;
+    }
+}

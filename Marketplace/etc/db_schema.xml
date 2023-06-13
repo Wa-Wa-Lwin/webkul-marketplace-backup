@@ -1,0 +1,338 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="marketplace_controller_list" resource="default" engine="innodb" comment="Marketplace Controller List Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="text" name="module_name" nullable="true" comment="Webkul Module Name"/>
+        <column xsi:type="text" name="controller_path" nullable="true" comment="Controller Path"/>
+        <column xsi:type="text" name="label" nullable="true" comment="Controller Label"/>
+        <column xsi:type="smallint" name="is_child" padding="5" nullable="false" default="0" comment="Is controller have any child Option"/>
+        <column xsi:type="int" name="parent_id" unsigned="true" nullable="false" default="0" comment="Parent Id"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+    </table>
+    <table name="marketplace_datafeedback" resource="default" engine="innodb" comment="Marketplace Feedback Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="int" name="seller_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Seller Id"/>
+        <column xsi:type="int" name="buyer_id" unsigned="true" nullable="false" default="0" comment="Buyer Id"/>
+        <column xsi:type="varchar" name="buyer_email" length="255" comment="Buyer Email"/>
+        <column xsi:type="smallint" name="status" unsigned="true" padding="5" nullable="false" default="0" comment="Status"/>
+        <column xsi:type="smallint" name="feed_price" unsigned="true" padding="5" nullable="false" default="0" comment="Feed Price"/>
+        <column xsi:type="smallint" name="feed_value" unsigned="true" padding="5" nullable="false" default="0" comment="Feed Value"/>
+        <column xsi:type="smallint" name="feed_quality" unsigned="true" padding="5" nullable="false" default="0" comment="Feed Quality"/>
+        <column xsi:type="varchar" name="feed_nickname" length="255" comment="Feed Nickname"/>
+        <column xsi:type="text" name="feed_summary" nullable="true" comment="Summary"/>
+        <column xsi:type="text" name="feed_review" nullable="true" comment="Review"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <column xsi:type="smallint" name="seller_pending_notification" unsigned="true" padding="5" nullable="false" default="0" comment="Notification flag for review"/>
+        <column xsi:type="smallint" name="admin_notification" unsigned="true" padding="5" nullable="false" default="0" comment="Notification flag for admin"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MARKETPLACE_DATAFEEDBACK_SELLER_ID_CUSTOMER_ENTITY_ENTITY_ID" table="marketplace_datafeedback" column="seller_id" referenceTable="customer_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="MARKETPLACE_DATAFEEDBACK_SELLER_ID" indexType="btree">
+            <column name="seller_id"/>
+        </index>
+    </table>
+    <table name="marketplace_feedbackcount" resource="default" engine="innodb" comment="Marketplace Feedbackcount Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="int" name="seller_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Seller Id"/>
+        <column xsi:type="int" name="buyer_id" unsigned="true" nullable="false" padding="10" default="0" comment="Buyer Id"/>
+        <column xsi:type="int" name="order_count" unsigned="true" nullable="false" padding="10" default="0" comment="Order Count"/>
+        <column xsi:type="int" name="feedback_count" unsigned="true" nullable="false" padding="10" default="0" comment="Feedback Count"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MARKETPLACE_FEEDBACKCOUNT_SELLER_ID_CUSTOMER_ENTITY_ENTITY_ID" table="marketplace_feedbackcount" column="seller_id" referenceTable="customer_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="MARKETPLACE_FEEDBACKCOUNT_SELLER_ID" indexType="btree">
+            <column name="seller_id"/>
+        </index>
+    </table>
+    <table name="marketplace_notification_list" resource="default" engine="innodb" comment="Marketplace Notification List Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="int" name="notification_id" unsigned="true" nullable="false" identity="false" padding="10" comment="Notification Id"/>
+        <column xsi:type="int" name="notification_row_id" unsigned="true" nullable="false" padding="10" default="0" comment="Contains Id of product order transaction as per type "/>
+        <column xsi:type="int" name="type" unsigned="true" nullable="false" padding="10" comment="Notification Type"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+    </table>
+    <table name="marketplace_orders" resource="default" engine="innodb" comment="Marketplace Orders Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="int" name="order_id" unsigned="true" nullable="false" identity="false" default="0" padding="10" comment="Magento Order Id"/>
+        <column xsi:type="varchar" name="product_ids" length="255" comment="Order Product Ids"/>
+        <column xsi:type="int" name="seller_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Seller Id"/>
+        <column xsi:type="varchar" name="shipment_id" nullable="false" length="255" default="0" comment="Shipment Id"/>
+        <column xsi:type="varchar" name="invoice_id" nullable="false" length="255" default="0" comment="Invoice Id"/>
+        <column xsi:type="varchar" name="creditmemo_id" nullable="false" length="255" default="0" comment="Creditmemo Id"/>
+        <column xsi:type="int" name="is_canceled" unsigned="true" nullable="false" identity="false" default="0" padding="10" comment="Canceled Status"/>
+        <column xsi:type="decimal" name="shipping_charges" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Shipping Charges"/>
+        <column xsi:type="varchar" name="carrier_name" length="255" comment="Carrier Name"/>
+        <column xsi:type="varchar" name="tracking_number" length="255" comment="Tracking Number"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <column xsi:type="smallint" name="tax_to_seller" unsigned="true" padding="5" nullable="false" default="0" comment="Tax to seller account flag"/>
+        <column xsi:type="decimal" name="total_tax" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Total Tax"/>
+        <column xsi:type="decimal" name="coupon_amount" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Coupon Amount"/>
+        <column xsi:type="decimal" name="refunded_coupon_amount" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Refunded Coupon Amount"/>
+        <column xsi:type="decimal" name="refunded_shipping_charges" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Refunded Shipping Amount"/>
+        <column xsi:type="smallint" name="seller_pending_notification" unsigned="true" padding="5" nullable="false" default="0" comment="Order Notification flag for sellers"/>
+        <column xsi:type="varchar" name="order_status" length="32" default="pending" nullable="false" comment="Order Status"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MARKETPLACE_ORDERS_ORDER_ID_SALES_ORDER_ENTITY_ID" table="marketplace_orders" column="order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="MARKETPLACE_ORDERS_ORDER_ID_SALES_ORDER_ENTITY_ID" indexType="btree">
+            <column name="order_id"/>
+        </index>
+    </table>
+    <table name="marketplace_order_pendingemails" resource="default" engine="innodb" comment="Marketplace Order Pending Email Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="int" name="seller_id" unsigned="true" nullable="false" identity="false" padding="10" comment="Seller Id"/>
+        <column xsi:type="int" name="order_id" unsigned="true" nullable="false" identity="false" padding="10" comment="Order Id"/>
+        <column xsi:type="text" name="myvar1" nullable="true" comment="myvar1"/>
+        <column xsi:type="text" name="myvar2" nullable="true" comment="myvar2"/>
+        <column xsi:type="text" name="myvar3" nullable="true" comment="myvar3"/>
+        <column xsi:type="text" name="myvar4" nullable="true" comment="myvar4"/>
+        <column xsi:type="text" name="myvar5" nullable="true" comment="myvar5"/>
+        <column xsi:type="text" name="myvar6" nullable="true" comment="myvar6"/>
+        <column xsi:type="text" name="myvar8" nullable="true" comment="myvar8"/>
+        <column xsi:type="text" name="myvar9" nullable="true" comment="myvar9"/>
+        <column xsi:type="text" name="isNotVirtual" nullable="true" comment="isNotVirtual"/>
+        <column xsi:type="text" name="sender_name" nullable="true" comment="sender_name"/>
+        <column xsi:type="text" name="sender_email" nullable="true" comment="sender_email"/>
+        <column xsi:type="text" name="receiver_name" nullable="true" comment="receiver_name"/>
+        <column xsi:type="text" name="receiver_email" nullable="true" comment="receiver_email"/>
+        <column xsi:type="int" name="status" nullable="false" default="0" comment="Status"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+    </table>
+    <table name="marketplace_product" resource="default" engine="innodb" comment="Marketplace Product Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="int" name="mageproduct_id" unsigned="true" nullable="false" default="0" identity="false" padding="10" comment="Magento Product Id"/>
+        <column xsi:type="int" name="adminassign" unsigned="true" nullable="false" default="0" identity="false" padding="10" comment="Admin Assign Id"/>
+        <column xsi:type="int" name="seller_id" unsigned="true" nullable="false" default="0" identity="false" padding="10" comment="Seller Id"/>
+        <column xsi:type="int" name="store_id" unsigned="true" nullable="false" default="0" identity="false" padding="10" comment="Store Id"/>
+        <column xsi:type="int" name="status" unsigned="true" nullable="false" default="0" padding="10" comment="Status"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <column xsi:type="smallint" name="seller_pending_notification" unsigned="true" padding="5" nullable="false" default="0" comment="Product Notification flag for sellers"/>
+        <column xsi:type="smallint" name="admin_pending_notification" unsigned="true" padding="5" nullable="false" default="0" comment="Product Notification flag for admin"/>
+        <column xsi:type="smallint" name="is_approved" unsigned="true" padding="5" nullable="false" default="0" comment="Is product approve by admin for the first time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MARKETPLACE_PRD_MAGEPRD_ID_CAT_PRD_ENTT_ENTT_ID" table="marketplace_product" column="mageproduct_id" referenceTable="catalog_product_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="MARKETPLACE_PRD_MAGEPRD_ID_CAT_PRD_ENTT_ENTT_ID" indexType="btree">
+            <column name="mageproduct_id"/>
+        </index>
+    </table>
+    <table name="marketplace_saleperpartner" resource="default" engine="innodb" comment="Marketplace sales Per Seller Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="int" name="seller_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Seller Id"/>
+        <column xsi:type="decimal" name="total_sale" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Total Sale"/>
+        <column xsi:type="decimal" name="amount_received" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Received Amount"/>
+        <column xsi:type="decimal" name="last_amount_paid" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Last Paid amount"/>
+        <column xsi:type="decimal" name="amount_remain" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Remaining Amount"/>
+        <column xsi:type="decimal" name="total_commission" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Total Commission Amount"/>
+        <column xsi:type="decimal" name="commission_rate" scale="4" precision="12" unsigned="false" nullable="true" comment="Commission Rate"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <column xsi:type="decimal" name="min_order_amount" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Min Order Amount"/>
+        <column xsi:type="smallint" name="min_order_status" unsigned="true" padding="5" nullable="false" default="0" comment="Minimum Order Amount Status"/>
+        <column xsi:type="smallint" name="commission_status" unsigned="true" padding="5" nullable="false" default="0" comment="Commission Status"/>
+        <column xsi:type="text" name="analytic_id" nullable="true" comment="Google Analytic Id"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+    </table>
+    <table name="marketplace_saleslist" resource="default" engine="innodb" comment="Marketplace Saleslist Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="int" name="mageproduct_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Magento Product Id"/>
+        <column xsi:type="int" name="order_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Magento Order Id"/>
+        <column xsi:type="int" name="order_item_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Magento Order Item Id"/>
+        <column xsi:type="int" name="parent_item_id" unsigned="true" nullable="true" identity="false" padding="10" comment="Magento Order Parent Item Id"/>
+        <column xsi:type="varchar" name="magerealorder_id" length="255" comment="Order Increment Id"/>
+        <column xsi:type="varchar" name="magequantity" length="255" comment="Quantity"/>
+        <column xsi:type="int" name="seller_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Seller Id"/>
+        <column xsi:type="int" name="trans_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Transaction Id"/>
+        <column xsi:type="int" name="cpprostatus" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Seller Order Status"/>
+        <column xsi:type="int" name="paid_status" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Seller Order Paid Status"/>
+        <column xsi:type="int" name="magebuyer_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Buyer Id"/>
+        <column xsi:type="varchar" name="magepro_name" length="255" comment="Product Name"/>
+        <column xsi:type="decimal" name="magepro_price" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Product Price"/>
+        <column xsi:type="decimal" name="total_amount" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Total Amount"/>
+        <column xsi:type="decimal" name="total_tax" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Total Tax"/>
+        <column xsi:type="decimal" name="total_commission" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Total Commission"/>
+        <column xsi:type="decimal" name="actual_seller_amount" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Actual Seller Amount"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <column xsi:type="smallint" name="is_shipping" unsigned="true" padding="5" nullable="false" default="0" comment="Is Shipping Applied"/>
+        <column xsi:type="smallint" name="is_coupon" unsigned="true" padding="5" nullable="false" default="0" comment="Is Coupon Applied"/>
+        <column xsi:type="smallint" name="is_paid" unsigned="true" padding="5" nullable="false" default="0" comment="Is Seller Paid For Current Row"/>
+        <column xsi:type="decimal" name="commission_rate" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Commission Rate Applied At The Time Of Order Placed"/>
+        <column xsi:type="decimal" name="currency_rate" scale="4" precision="12" default="1.0000" unsigned="false" nullable="false" comment="Ordered Currency Rate"/>
+        <column xsi:type="decimal" name="applied_coupon_amount" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Applied Coupon Amount At The Time Of Order Placed"/>
+        <column xsi:type="smallint" name="is_withdrawal_requested" unsigned="true" padding="5" nullable="false" default="0" comment="Is Is Withdrawal Requested "/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MARKETPLACE_SALESLIST_ORDER_ID_SALES_ORDER_ENTITY_ID" table="marketplace_saleslist" column="order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="MARKETPLACE_SALESLIST_ORDER_ID_SALES_ORDER_ENTITY_ID" indexType="btree">
+            <column name="order_id"/>
+        </index>
+    </table>
+    <table name="marketplace_sellertransaction" resource="default" engine="innodb" comment="Marketplace Transaction Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="varchar" name="transaction_id" length="255" comment="Transaction Id"/>
+        <column xsi:type="varchar" name="onlinetr_id" length="255" comment="Online Transaction Id"/>
+        <column xsi:type="int" name="seller_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Seller Id"/>
+        <column xsi:type="decimal" name="transaction_amount" scale="4" precision="12" default="0.0000" unsigned="false" nullable="false" comment="Transaction Amount"/>
+        <column xsi:type="varchar" name="type" length="255" comment="Payment Type"/>
+        <column xsi:type="varchar" name="method" length="255" comment="Payment Method"/>
+        <column xsi:type="text" name="custom_note" nullable="true" comment="Custom Note"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <column xsi:type="smallint" name="seller_pending_notification" unsigned="true" padding="5" nullable="false" default="0" comment="Notification flag for sellers"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MARKETPLACE_SELLERTRANSACTION_SELLER_ID_CSTR_ENTT_ENTT_ID" table="marketplace_sellertransaction" column="seller_id" referenceTable="customer_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="MARKETPLACE_SELLERTRANSACTION_SELLER_ID_CSTR_ENTT_ENTT_ID" indexType="btree">
+            <column name="seller_id"/>
+        </index>
+    </table>
+    <table name="marketplace_userdata" resource="default" engine="innodb" comment="Marketplace Product Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="int" name="is_seller" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Is Seller?"/>
+        <column xsi:type="int" name="seller_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Seller Id"/>
+        <column xsi:type="text" name="payment_source" nullable="true" comment="Seller Payment Source"/>
+        <column xsi:type="varchar" name="twitter_id" length="255" comment="Twitter Id"/>
+        <column xsi:type="varchar" name="facebook_id" length="255" comment="Facebook Id"/>
+        <column xsi:type="varchar" name="gplus_id" length="255" comment="Google Plus Id"/>
+        <column xsi:type="varchar" name="youtube_id" length="255" comment="Youtube Id"/>
+        <column xsi:type="varchar" name="vimeo_id" length="255" comment="Vimeo Id"/>
+        <column xsi:type="varchar" name="instagram_id" length="255" comment="Instagram Id"/>
+        <column xsi:type="varchar" name="pinterest_id" length="255" comment="Pinterest Id"/>
+        <column xsi:type="varchar" name="moleskine_id" length="255" comment="Moleskine Id"/>
+        <column xsi:type="int" name="tw_active" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Twitter Active Status"/>
+        <column xsi:type="int" name="fb_active" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Facebook Active Status"/>
+        <column xsi:type="int" name="gplus_active" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Google+ Active Status"/>
+        <column xsi:type="int" name="youtube_active" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Youtube Active Status"/>
+        <column xsi:type="int" name="vimeo_active" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Vimeo Active Status"/>
+        <column xsi:type="int" name="instagram_active" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Instagram Active Status"/>
+        <column xsi:type="int" name="pinterest_active" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Pinterest Active Status"/>
+        <column xsi:type="int" name="moleskine_active" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Moleskine Active Status"/>
+        <column xsi:type="text" name="others_info" nullable="true" comment="Others Info"/>
+        <column xsi:type="text" name="banner_pic" nullable="true" comment="Banner Image"/>
+        <column xsi:type="text" name="shop_url" nullable="true" comment="Shop Url"/>
+        <column xsi:type="text" name="shop_title" nullable="true" comment="Shop Title"/>
+        <column xsi:type="text" name="logo_pic" nullable="true" comment="Logo Image"/>
+        <column xsi:type="text" name="company_locality" nullable="true" comment="Company Locality"/>
+        <column xsi:type="text" name="country_pic" nullable="true" comment="Country Flag Image"/>
+        <column xsi:type="text" name="company_description" nullable="true" comment="Company Description"/>
+        <column xsi:type="text" name="meta_keyword" nullable="true" comment="Meta Keyword"/>
+        <column xsi:type="text" name="meta_description" nullable="true" comment="Meta Description"/>
+        <column xsi:type="text" name="background_width" nullable="true" comment="Background Width"/>
+        <column xsi:type="int" name="store_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Store Id"/>
+        <column xsi:type="varchar" name="contact_number" length="50" comment="Contact Number"/>
+        <column xsi:type="text" name="return_policy" nullable="true" comment="Return Policy"/>
+        <column xsi:type="text" name="shipping_policy" nullable="true" comment="Shipping Policy"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <column xsi:type="smallint" name="admin_notification" unsigned="true" padding="5" nullable="false" default="0" comment="Notification flag for admin"/>
+        <column xsi:type="text" name="privacy_policy" nullable="true" comment="Privacy Policy"/>
+        <column xsi:type="text" name="allowed_categories" nullable="false" comment="Allowed Categories Ids"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+    </table>
+    <table name="marketplace_sellerflag_reason" resource="default" engine="innodb" comment="Marketplace Seller Flag Reason Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="text" name="reason" nullable="true" comment="Flag Reason"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <column xsi:type="smallint" name="status" unsigned="true" padding="5" nullable="false" default="0" comment="Status"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+    </table>
+    <table name="marketplace_productflag_reason" resource="default" engine="innodb" comment="Marketplace Product Flag Reason Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="text" name="reason" nullable="true" comment="Flag Reason"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" comment="Update Time"/>
+        <column xsi:type="smallint" name="status" unsigned="true" padding="5" nullable="false" default="0" comment="Status"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+    </table>
+    <table name="marketplace_sellerflags" resource="default" engine="innodb" comment="Marketplace Seller Flag Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="int" name="seller_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Seller Id"/>
+        <column xsi:type="text" name="name" nullable="true" comment="Reporter Name"/>
+        <column xsi:type="text" name="email" nullable="true" comment="Reporter Email"/>
+        <column xsi:type="text" name="reason" nullable="true" comment="Flag Reason"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MARKETPLACE_SELLERFLAGS_SELLER_ID_CSTR_ENTT_ENTT_ID" table="marketplace_sellerflags" column="seller_id" referenceTable="customer_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="MARKETPLACE_SELLERFLAGS_SELLER_ID_CSTR_ENTT_ENTT_ID" indexType="btree">
+            <column name="seller_id"/>
+        </index>
+    </table>
+    <table name="marketplace_productflags" resource="default" engine="innodb" comment="Marketplace Seller Flag Table">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="int" name="product_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Product Id"/>
+        <column xsi:type="text" name="name" nullable="true" comment="Reporter Name"/>
+        <column xsi:type="text" name="email" nullable="true" comment="Reporter Email"/>
+        <column xsi:type="text" name="reason" nullable="true" comment="Flag Reason"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" comment="Creation Time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MARKETPLACE_PRODUCTSFLAGS_PRODUCT_ID_CAT_PRD_ENTT_ENTT_ID" table="marketplace_productflags" column="product_id" referenceTable="catalog_product_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="MARKETPLACE_PRODUCTSFLAGS_PRODUCT_ID_CAT_PRD_ENTT_ENTT_ID" indexType="btree">
+            <column name="product_id"/>
+        </index>
+    </table>
+    <table name="sales_order" resource="sales" comment="Sales Flat Order">
+        <column xsi:type="smallint" name="order_approval_status" unsigned="true" padding="5" nullable="false" default="0" comment="Order Approval Status"/>
+    </table>
+    <table name="sales_order_grid" resource="sales" comment="Sales Flat Order Grid">
+        <column xsi:type="smallint" name="order_approval_status" unsigned="true" padding="5" nullable="false" default="0" comment="Order Approval Status"/>
+    </table>
+    <table name="wk_mp_wysiwyg_image" resource="default" engine="innodb" comment="Decription Image">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" padding="10" identity="true" comment="Entity Id"/>
+        <column xsi:type="int" name="seller_id" unsigned="true" nullable="false" identity="false" padding="10" default="0" comment="Seller Id"/>
+        <column xsi:type="text" name="url" nullable="true" comment="Image Url"/>
+        <column xsi:type="text" name="name" nullable="true" comment="Name"/>
+        <column xsi:type="text" name="type" nullable="true" comment="Type"/>
+        <column xsi:type="text" name="file" nullable="true" comment="File"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+    </table>
+</schema>

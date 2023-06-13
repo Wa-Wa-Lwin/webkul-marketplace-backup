@@ -1,0 +1,82 @@
+<?php
+$paramData = $block->getParmasDetail();
+$periodlist = $block->getPeriodValues();
+$filter = $paramData['period'] ?? '';
+$filterDateFrom = $paramData['from'] ?? '';
+$filterDateTo = $paramData['to'] ?? '';
+list($dataset, $labels)= $block->getDatasets();
+?>
+<form action="<?= $escaper->escapeUrl($block->getUrl('marketplace/account/earning', ["_secure" => $this->getRequest()->isSecure()])) ?>" enctype="multipart/form-data" method="get" data-role="form-earning-validate" data-mage-init='{"validation":{}}'>
+    <div class="wk-mp-design">
+        <fieldset class="fieldset info wk-mp-fieldset">
+            <div data-mage-init='{"formButtonAction": {}}' class="wk-mp-page-title legend" id="wk-mp-earning-form">
+                <span><?= /* @noEscape */ __('Filter') ?></span>
+                <button class="button wk-mp-btn" title="<?= /* @noEscape */ __('Show Report') ?>" type="submit" id="save-btn">
+                    <span><span><?= /* @noEscape */ __('Show Report') ?></span></span>
+                </button>
+            </div>
+            <div class="field earning required">
+                <label class="required" for="period"><?= /* @noEscape */ __('Period:') ?> </label>
+                <div class="control">
+                    <select name="period" id="period">
+                            <?php foreach ($periodlist as $period): ?>
+                                <option value="<?= /* @noEscape */ $period['value']?>" 
+                                <?php if ($filter == $period['value']) { echo 'selected="selected"'; }?>>
+                                <?= /* @noEscape */ $period['label']?></option>
+                            <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label"><?= $escaper->escapeHtml(__('From')) ?>:</label>
+                <div class="control">
+                    <input type="text" name="from" id="earning-from-date" 
+                    class="input-text" value="<?= $escaper->escapeHtml($filterDateFrom)?>" />
+                </div>
+            </div>
+            <div class="field">
+                <label class="label"><?= $escaper->escapeHtml(__('To')) ?>:</label>
+                <div class="control">
+                    <input type="text" name="to" id="earning-to-date" 
+                    class="input-text" value="<?= $escaper->escapeHtml($filterDateTo)?>" />
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<div id="container" style="width: 100%; float:right">
+    <canvas id="canvas"></canvas>
+</div>
+<script>
+    require([
+        "jquery",
+        'Webkul_Marketplace/js/earning/Chart.bundle',
+        'Webkul_Marketplace/js/earning/utils'
+    ], function ($) {
+        var MONTHS = [];
+        var color = Chart.helpers.color;
+        var barChartData = {
+            labels: <?= /* @noEscape */ $labels; ?>,
+            datasets: <?= /* @noEscape */ $dataset; ?>
+
+        };
+        $(document).ready(function() {
+            var ctx = document.getElementById('canvas').getContext('2d');
+            window.myBar = new Chart(ctx, {
+                type: 'bar',
+                data: barChartData,
+                options: {
+                    responsive: true,
+                }
+            });
+
+        });
+    })
+</script>
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Webkul_Marketplace/js/earning/date-range": {}
+        }
+    }
+</script>

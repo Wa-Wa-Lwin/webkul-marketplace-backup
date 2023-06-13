@@ -1,0 +1,33 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<?php foreach ($block->getOrderTotals() as $_code => $_total): ?>
+    <?php if ($_total->getBlockName()): ?>
+        <?= $block->getChildHtml($_total->getBlockName(), false) ?>
+    <?php else:?>
+    <tr class="<?= /* @noEscape */ $_code ?>">
+        <th <?= /* @noEscape */ $block->getLabelProperties() ?> scope="row">
+            <?php if ($_total->getStrong()):?>
+            <strong><?= $escaper->escapeHtml($_total->getLabel()) ?></strong>
+            <?php else:?>
+                <?= $escaper->escapeHtml($_total->getLabel()) ?>
+            <?php endif?>
+        </th>
+        <td <?= /* @noEscape */ $block->getValueProperties() ?> data-th="<?= $escaper->escapeHtml($_total->getLabel()) ?>">
+            <?php if ($_total->getStrong()):?>
+            <strong><?= /* @noEscape */ $block->formatValue($_total) ?></strong>
+            <?php else:?>
+                <?= /* @noEscape */ $block->formatValue($_total) ?>
+            <?php endif?>
+        </td>
+    </tr>
+    <?php endif?>
+<?php endforeach?>

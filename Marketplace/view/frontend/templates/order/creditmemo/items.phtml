@@ -1,0 +1,261 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<?php $order = $block->getOrder() ?>
+<?php $items = $block->getItems(); ?>
+<?php
+$paymentCode = '';
+$colSpan = 7;
+if ($order->getPayment()) {
+    $colSpan = 8;
+    $paymentCode = $order->getPayment()->getMethod();
+}
+?>
+<div class="table-wrapper order-items">
+    <table class="data table table-order-items" id="my-orders-table" summary="<?= $escaper->escapeHtml(__('Items Refunded')) ?>">
+        <caption class="table-caption"><?= $escaper->escapeHtml(__('Items Refunded')) ?></caption>
+        <thead>
+            <?php if ($block->isPagerDisplayed()): ?>
+                <tr>
+                    <td colspan="<?= $escaper->escapeHtml($colSpan) ?>" data-block="order-items-pager-top" class="order-pager-wrapper order-pager-wrapper-top">
+                        <?= $block->getPagerHtml() ?>
+                    </td>
+                </tr>
+            <?php endif ?>
+            <tr>
+                <th class="col name"><?= $escaper->escapeHtml(__('Product Name')) ?></th>
+                <th class="col price"><?= $escaper->escapeHtml(__('Price')) ?></th>
+                <th class="col qty"><?= $escaper->escapeHtml(__('Qty')) ?></th>
+                <th class="col price"><?= $escaper->escapeHtml(__('Subtotal')) ?></th>
+                <?php
+                if ($paymentCode == 'mpcashondelivery') {?>
+                    <th class="col price"><?= $escaper->escapeHtml(__('COD Charges')) ?></th>
+                    <?php
+                } ?>
+                <th class="col price"><?= $escaper->escapeHtml(__('Tax Amount')) ?></th>
+                <th class="col price"><?= $escaper->escapeHtml(__('Discount Amount')) ?></th>
+                <th class="col price"><?= $escaper->escapeHtml(__('Row Total')) ?></th>
+            </tr>
+        </thead>
+        <?php
+        $i = 0;
+        foreach ($items as $item) {
+            $currencyRate = $item->getCurrencyRate();
+            $codcharges = 0;
+            if ($paymentCode=='mpcashondelivery') {
+                $codcharges = $item->getCodCharges();
+            }
+            if ($item->getProductType()!='bundle') {
+                $result = [];
+                if ($options = $item->getProductOptions()) {
+                    if (isset($options['options'])) {
+                        $result = array_merge($result, $options['options']);
+                    }
+                    if (isset($options['additional_options'])) {
+                        $result = array_merge($result, $options['additional_options']);
+                    }
+                    if (isset($options['attributes_info'])) {
+                        $result = array_merge($result, $options['attributes_info']);
+                    }
+                } ?>
+                <?php if ($item->getParentItem()) { continue;} ?>
+                <tbody>
+                    <tr class="border" id="order-item-row-<?= $escaper->escapeHtml($item->getId()) ?>">
+                        <?php if ($item->getProductType()=='downloadable') { ?>
+                            <td class="col name" data-th="<?= $escaper->escapeHtml(__('Product Name')); ?>">
+                                <strong class="product name product-item-name"><?= $escaper->escapeHtml($item->getName()) ?></strong>
+                                <?php if ($_options = $block->getItemOptions($item)): ?>
+                                    <dl class="item-options links">
+                                        <?php foreach ($_options as $_option): ?>
+                                            <dt><?= $escaper->escapeHtml($_option['label']) ?></dt>
+                                            <?php if (!$block->getPrintStatus()): ?>
+                                                <?php $_formatedOptionValue = $block->getFormatedOptionValue($_option) ?>
+                                                <dd>
+                                                    <?php if (isset($_formatedOptionValue['full_view'])): ?>
+                                                        <?= /* @noEscape */ $_formatedOptionValue['full_view'] ?>
+                                                    <?php else: ?>
+                                                        <?= /* @noEscape */ $_formatedOptionValue['value'] ?>
+                                                    <?php endif; ?>
+                                                </dd>
+                                            <?php else: ?>
+                                                <dd><?= $escaper->escapeHtml((isset($_option['print_value']) ? $_option['print_value'] : $_option['value'])) ?></dd>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    </dl>
+                                <?php endif; ?>
+                                <?php /* downloadable */?>
+                                <?php if ($links = $block->getDownloadableLinks($item->getId())): ?>
+                                    <dl class="item-options links">
+                                        <dt><?= /* @escapeNotVerified */ $escaper->escapeHtml($block->getLinksTitle($item->getId())) ?></dt>
+                                        <?php foreach ($links->getPurchasedItems() as $link): ?>
+                                            <dd><?= $escaper->escapeHtml($link->getLinkTitle()); ?></dd>
+                                        <?php endforeach; ?>
+                                    </dl>
+                                <?php endif; ?>
+                                <?php /* EOF downloadable */?>
+
+                                <?php $addInfoBlock = $block->getProductAdditionalInformationBlock(); ?>
+                                <?php if ($addInfoBlock):?>
+                                    <?= $addInfoBlock->setItem($item->getOrderItem())->toHtml(); ?>
+                                <?php endif; ?>
+                                <?= $escaper->escapeHtml($item->getDescription()) ?>
+                            </td>
+                        <?php } else { ?>
+                            <td class="col name" data-th="<?= $escaper->escapeHtml(__('Product Name')); ?>">
+                                <strong class="product name product-item-name"><?= $escaper->escapeHtml($item->getName()) ?></strong>
+                                <?php if ($_options = $result): ?>
+                                    <dl class="item-options">
+                                    <?php foreach ($_options as $_option): ?>
+                                        <dt><?= $escaper->escapeHtml($_option['label']) ?></dt>
+                                        <?php if (!$block->getPrintStatus()): ?>
+                                            <?php $_formatedOptionValue = $block->getFormatedOptionValue($_option) ?>
+                                            <dd>
+                                                <?php if (isset($_formatedOptionValue['full_view'])): ?>
+                                                    <?= /* @noEscape */ $_formatedOptionValue['full_view'] ?>
+                                                <?php else: ?>
+                                                    <?= /* @noEscape */ $_formatedOptionValue['value'] ?>
+                                                <?php endif; ?>
+                                            </dd>
+                                        <?php else: ?>
+                                            <dd>
+                                                <?= /* @noEscape */ nl2br($escaper->escapeHtml((isset($_option['print_value']) ? $_option['print_value'] : $_option['value']))) ?>
+                                            </dd>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                    </dl>
+                                <?php endif; ?>
+                            </td>
+                            <?php
+                        } ?>
+                        <td class="col price" data-th="<?= $escaper->escapeHtml(__('Price')); ?>">
+                            <span class="price-excluding-tax" data-label="<?= $escaper->escapeHtml(__('Excl. Tax')); ?>">
+                                <span class="cart-price">
+                                    <?= /* @noEscape */ $order->formatPrice($item->getPrice()); ?>
+                                </span>
+                            </span>
+                        </td>
+                        <td class="col qty" data-th="<?= $escaper->escapeHtml(__('Qty')); ?>">
+                            <?= $escaper->escapeHtml((int)$item->getQty()); ?>
+                        </td>
+                        <td class="col price" data-th="<?= $escaper->escapeHtml(__('Subtotal')); ?>"><?= /* @noEscape */ $order->formatPrice($item->getRowTotal());?></td>
+                        <?php
+                        if ($paymentCode == 'mpcashondelivery') {?>
+                            <td class="col price" data-th="<?= $escaper->escapeHtml(__('COD Charges')) ?>">
+                                <?= /* @noEscape */ $order->formatPrice($block->getOrderedPricebyorder($currencyRate, $codcharges)) ?>
+                            </td>
+                            <?php
+                        } ?>
+                        <td class="col price" data-th="<?= $escaper->escapeHtml(__('Tax Total')); ?>"><?= /* @noEscape */ $order->formatPrice($item->getTaxAmount());?></td>
+                        <td class="col price" data-th="<?= $escaper->escapeHtml(__('Discount Total')); ?>">
+                            <?= /* @noEscape */ $order->formatPrice($item->getDiscountAmount()) ?>
+                        </td>
+                        <td class="col subtotal" data-th="<?= $escaper->escapeHtml(__('Row Total')); ?>">
+                            <?= /* @noEscape */ $order->formatPrice(($item->getRowTotal()+$item->getTaxAmount()+$block->getOrderedPricebyorder($currencyRate, $codcharges))-$item->getDiscountAmount());?>
+                        </td>
+                    </tr>
+                </tbody>
+                <?php
+            } else {
+                // for bundle product
+                if ($item->getChildrenItems()) {
+                    $bundleitems = array_merge([$item], $item->getChildrenItems());
+                } else {
+                    $bundleitems = [$item];
+                }
+                $_count = count($bundleitems);
+                $_index = 0;
+                $_prevOptionId = '';
+                ?>
+                <?php foreach ($bundleitems as $_bundleitem): ?>
+                    <?php
+                    if ($paymentCode=='mpcashondelivery') {
+                        $codcharges = $_bundleitem->getCodCharges();
+                    }
+                    ?>
+                    <?php $attributes_option = $block->getSelectionAttribute($_bundleitem); ?>
+                    <?php if ($_bundleitem->getParentItem()): ?>
+                        <?php $attributes = $attributes_option ?>
+                        <?php if ($_prevOptionId != $attributes['option_id']): ?>
+                        <tr class="options-label">
+                            <td class="col label" colspan="8" data-th="<?= $escaper->escapeHtml(__('Product Name')); ?>">
+                                <?= $escaper->escapeHtml($attributes['option_label']) ?>
+                            </td>
+                        </tr>
+                            <?php $_prevOptionId = $attributes['option_id'] ?>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <tr<?= (++$_index==$_count)?' class="border bundle"':' class="bundle"' ?> id="order-item-row-<?= $escaper->escapeHtml($_bundleitem->getId()) ?>">
+                        <?php
+                        if (!$_bundleitem->getParentItem()) {?>
+                            <td><h3 class="product-name"><?= $escaper->escapeHtml($_bundleitem->getName()) ?></h3></td>
+                            <td class="lin-hide">&nbsp;</td>
+                            <td class="lin-hide">&nbsp;</td>
+                            <td class="lin-hide">&nbsp;</td>
+                            <td class="lin-hide">&nbsp;</td>
+                            <?php
+                            if ($paymentCode == 'mpcashondelivery') {?>
+                                <td class="lin-hide">&nbsp;</td>
+                                <?php
+                            } ?>
+                            <td class="lin-hide">&nbsp;</td>
+                            <td class="lin-hide">&nbsp;</td>
+                            <?php
+                        } else { ?>
+                            <?php
+                            if ($_bundleitem->getQtyRefunded() == 0) {
+                                continue;
+                            } ?>
+                            <td class="col value" data-th="<?= $escaper->escapeHtml(__('Product Name')); ?>">
+                                <?= $block->getValueHtml($_bundleitem)?>
+                                <?php $addInfoBlock = $block->getOrderItemAdditionalInfoBlock(); ?>
+                                <?php if ($addInfoBlock): ?>
+                                    <?= $addInfoBlock->setItem($_bundleitem)->toHtml() ?>
+                                <?php endif;?>
+                            </td>
+                            <td class="col price" data-rwd-label="<?= $escaper->escapeHtml(__('Price')) ?>"><?= /* @noEscape */ $order->formatPrice($_bundleitem->getPrice());?>
+                            </td>
+                            <td class="col qty" data-th="<?= $escaper->escapeHtml(__('Qty')); ?>">
+                                <?= $escaper->escapeHtml((int)$_bundleitem->getQty()); ?>
+                            </td>
+                            <td class="col price" data-th="<?= $escaper->escapeHtml(__('Subtotal')); ?>"><?= /* @noEscape */ $order->formatPrice($_bundleitem->getRowTotal());?></td>
+                            <?php
+                            if ($paymentCode == 'mpcashondelivery') {?>
+                                <td class="col price" data-th="<?= /* @noEscape */ $escaper->escapeHtml(__('COD Charges')) ?>">
+                                    <?= /* @noEscape */ $order->formatPrice($block->getOrderedPricebyorder($currencyRate, $codcharges));?>
+                                </td>
+                                <?php
+                            } ?>
+                            <td class="col price" data-th="<?= $escaper->escapeHtml(__('Tax Total')); ?>"><?= /* @noEscape */ $order->formatPrice($item->getTaxAmount());?></td>
+                            <td class="col price" data-th="<?= $escaper->escapeHtml(__('Discount Total')); ?>">
+                                <?= /* @noEscape */ $order->formatPrice($_bundleitem->getDiscountAmount()) ?>
+                            </td>
+                            <td class="col subtotal" data-th="<?= $escaper->escapeHtml(__('Row Total')); ?>">
+                                <?= /* @noEscape */ $order->formatPrice(($_bundleitem->getRowTotal()+$_bundleitem->getTaxAmount()+$block->getOrderedPricebyorder($currencyRate, $codcharges))-$_bundleitem->getDiscountAmount());?>
+                            </td>
+                            <?php
+                        }?>
+                    </tr>
+                <?php endforeach; ?>
+                <?php
+            }
+        } ?>
+        <tfoot>
+            <?php if ($block->isPagerDisplayed()): ?>
+                <tr>
+                    <td colspan="<?= $escaper->escapeHtml($colSpan) ?>" data-block="order-items-pager-bottom" class="order-pager-wrapper order-pager-wrapper-bottom">
+                        <?= $block->getPagerHtml() ?>
+                    </td>
+                </tr>
+            <?php endif ?>
+            <?= $block->getChildHtml('marketplace_order_creditmemo_totals') ?>
+        </tfoot>
+    </table>
+</div>

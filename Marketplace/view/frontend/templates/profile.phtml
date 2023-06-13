@@ -1,0 +1,80 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+$helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+$partner=$block->getProfileDetail();
+if ($partner['shop_url']) {
+    $sellerId = $partner->getSellerId();
+    $analyticStatus = $helper->getAnalyticStatus();
+    if ($analyticStatus) {
+        $analyticId = $helper->getSellerAnalyticId($sellerId);
+    }
+    if ($helper->getActiveColorPicker()) { ?>
+        <style>
+            .page-main{
+                background-image:none;
+                background-color:<?= $escaper->escapeHtml($partner['background_width']);?>;
+            }
+        </style>
+    <?php } ?>
+    <div class="wk_mp_design">
+        <?= $block->getChildHtml("marketplace_seller_top_block")?>
+        <div class="wk-mp-collection-container">
+            <?= $this->getChildHtml('marketplace_sellerprofile_recently_added_products')?>
+            <div class="wk-mp-profile-block" id="about-us">
+                <div class="wk-mp-aboutus-title">
+                    <?= $escaper->escapeHtml(__("About Us"))?>
+                </div>
+                <div class="wk-mp-aboutus-data">
+                    <?= /* @noEscape */ $block->getFilterData($partner['company_description']);?>
+                    <?= $block->getChildHtml("marketplace_seller_description")?>
+                </div>
+            </div>
+            <?= $this->getChildHtml('marketplace_sellerprofile_rating')?>
+            <?php if ($helper->getSellerPolicyApproval()) { ?>
+                <div class="wk-mp-profile-block" id="wk-mp-policy-block">
+                    <div class="wk-mp-policy-block wk-mp-shipping-policy" id="shipping-policy">
+                        <div class="wk-mp-policy-block-title">
+                            <?= $escaper->escapeHtml(__("Shipping Policy"))?>
+                        </div>
+                        <div class="wk-mp-policy-block-data">
+                            <?= /* @noEscape */ $block->getFilterData($partner['shipping_policy']);?>
+                        </div>
+                    </div>
+                    <div class="wk-mp-policy-block wk-mp-return-policy" id="return-policy">
+                        <div class="wk-mp-policy-block-title">
+                            <?= /* @noEscape */ __("Return Policy")?>
+                        </div>
+                        <div class="wk-mp-policy-block-data">
+                            <?= /* @noEscape */ $block->getFilterData($partner['return_policy']);?>
+                        </div>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
+    </div>
+    <?php if ($analyticStatus && $analyticId) {?>
+        <script>
+            require([
+                'jquery',
+                'mage/cookies'
+            ], function($) {
+                var analyticId = "<?= $analyticId ?>";
+                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                    })(window,document,'script','https://www.google-analytics.com/analytics.js','wkga');
+
+                    wkga('create', analyticId, {'name':'seller'});
+                    wkga('seller.send', 'pageview');
+            });
+        </script>
+    <?php }?>
+<?php }  ?>

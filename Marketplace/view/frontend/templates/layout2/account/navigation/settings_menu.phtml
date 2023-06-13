@@ -1,0 +1,45 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+$_helper = $this->helper(\Webkul\Marketplace\Helper\Data::class);
+$magentoCurrentUrl = $block->getCurrentUrl();
+$isSellerGroup = $_helper->isSellerGroupModuleInstalled();
+?>
+<li class="wk-mp-item-settings level-0 <?= /* @noEscape */ strpos($magentoCurrentUrl, 'marketplace/account/editprofile')? "current active":"";?>" id="wk-mp-menu-settings">
+    <a href="#" onclick="return false;" class="">
+        <span><?= /* @noEscape */ __('Settings')?></span>
+    </a>
+    <div class="wk-mp-submenu">
+        <strong class="wk-mp-submenu-title"><?= /* @noEscape */ __('Settings')?></strong>
+        <a href="#" class="action-close _close" data-role="wk-mp-close-submenu"></a>
+        <ul>
+            <li data-ui-id="menu-webkul-marketplace-setting-menu" class="item-menu parent level-1">
+                <strong class="wk-mp-submenu-group-title">
+                    <span><?= /* @noEscape */ __('Menu')?></span>
+                </strong>
+                <div class="wk-mp-submenu">
+                    <ul>
+                        <?php if (($isSellerGroup && $_helper->isAllowedAction('marketplace/account/editprofile')) || !$isSellerGroup) { ?>
+                            <?php if ($_helper->getSellerProfileDisplayFlag()) { ?>
+                                <li class="level-2">
+                                    <a href="<?= $escaper->escapeUrl($block->getUrl('marketplace/account/editprofile', ['_secure' => $this->getRequest()->isSecure()])); ?>">
+                                        <span><?= /* @noEscape */ __('Profile Settings') ?></span>
+                                    </a>
+                                </li>
+                            <?php } ?>
+                        <?php } ?>
+                    </ul>
+                </div>
+            </li>
+            <?= $block->getChildHtml('layout2_seller_account_navigation_shipping_menu'); ?>
+            <?= $block->getChildHtml('layout2_seller_account_navigation_payment_menu'); ?>
+        </ul>
+    </div>
+</li>

@@ -1,0 +1,41 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<?php
+    $commissionValue = $block->getCommission();
+    // $currencySymbol = $block->getCurrencySymbol();
+?>
+<div class="admin__fieldset-wrapper opened">
+    <div class="admin__fieldset-wrapper-content">
+        <fieldset class="admin__fieldset">
+            <table class="admin__table-secondary">
+                <tbody>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Total Sale'));?></th>
+                        <td><?= $block->escapeHtml($block->getCurrencyPrice($commissionValue['total_sale'])); ?></td>
+                    </tr>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Total Seller Sale')); ?></th>
+                        <td><?= $block->escapeHtml($block->getCurrencyPrice($commissionValue['actual_seller_amt'])); ?></td>
+                    </tr>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Total Admin Sale')) ?></th>
+                        <td><?= $block->escapeHtml($block->getCurrencyPrice($commissionValue['total_comm'])); ?></td>
+                    </tr>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Current Commission %')) ?></th>
+                        <td><?= $block->escapeHtml($commissionValue['current_val']); ?>%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </fieldset>
+    </div>
+</div>

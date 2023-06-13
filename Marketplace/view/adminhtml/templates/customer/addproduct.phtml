@@ -1,0 +1,25 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<div class="admin__fieldset-wrapper opened">
+    <div class="admin__fieldset-wrapper-content">
+        <fieldset class="admin__fieldset">
+            <table class="admin__table-secondary">
+                <tbody>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Assigned Product Ids')) ?></th>
+                        <td style="word-break: break-all;"><?= $block->escapeHtml($block->getProductIds()) ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </fieldset>
+    </div>
+</div>

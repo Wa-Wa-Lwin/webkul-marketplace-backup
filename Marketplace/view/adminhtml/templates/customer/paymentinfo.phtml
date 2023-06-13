@@ -1,0 +1,36 @@
+<?php
+/**
+ * Webkul Software.
+ *
+ * @category  Webkul
+ * @package   Webkul_Marketplace
+ * @author    Webkul
+ * @copyright Copyright (c) Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+?>
+<?php $paymentInfo = $block->getPaymentInfo() ?>
+<div class="admin__fieldset-wrapper opened">
+    <div class="admin__fieldset-wrapper-title">
+        <strong class="title">
+            <span data-bind="text: label"><?= $block->escapeHtml(__('Payment Information')) ?></span>
+        </strong>
+    </div>
+    <?php if ($paymentInfo != ''): ?>
+        <div class="admin__fieldset-wrapper-content">
+            <fieldset class="admin__fieldset">
+                <address>
+                   <?= /* @noEscape */ $paymentInfo; ?>
+                </address>
+            </fieldset>
+        </div>
+    <?php else: ?>
+        <div class="admin__fieldset-wrapper-content">
+            <fieldset class="admin__fieldset">
+                <address>
+                   <?= $block->escapeHtml(__('Payment Information not filled by the Seller yet.')); ?>
+                </address>
+            </fieldset>
+        </div>
+    <?php endif; ?>
+</div>
